@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login or Register</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login_style.css') }}">
+</head>
+
+<body>
+    <h1>iagents</h1>
+    <h2>The Entrance to iAgents</h2>
+
+    <div class="container"> 
+        <h2>Login</h2>
+        <form method="post" action="/login">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required><br><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" required><br><br>
+            <input type="submit" value="Login">
+        </form>
+
+        <h2>Register</h2>
+        <form method="post" action="/register">
+            <label for="new_username">New Username:</label><br>
+            <input type="text" id="new_username" name="username" required><br><br>
+            <label for="new_password">New Password:</label><br>
+            <input type="password" id="new_password" name="password" required><br><br>
+            <input type="submit" value="Register">
+        </form>
+    </div>
+</body>
+
+</html>

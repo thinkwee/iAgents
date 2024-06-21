@@ -1,0 +1,24 @@
+backend:
+  provider: gpt
+  google_api_key: YOUR_GOOGLE_API_KEY_HERE
+  openai_api_key: YOUR_OPENAI_KEY_HERE
+  base_url: 
+website:
+  host: 0.0.0.0
+  port: 6060
+  flask_secret: iAgents
+mysql:
+  host: localhost
+  username: YOUR_MYSQL_USERNAME_HERE
+  password: YOUR_MYSQL_PASSWORD_HERE
+  database: test
+logging:
+  level: INFO
+  logname: test
+agent:
+  max_query_retry_times: 1
+  max_communication_turns: 1
+  max_tool_retry_times: 1
+  rewrite_prompt: True
+mode:
+  mode: Base

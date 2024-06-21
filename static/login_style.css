@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1,
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    padding-top: 40px;
+}
+
+h1 {
+    font-size: 40px;
+    color: #06C05F;
+}
+
+h2 {
+    font-size: 20px;
+    color: #06C05F;
+}
+
+.container {
+    max-width: 400px;
+    margin: 10px auto;
+    padding: 30px;
+    text-align: center;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+.container h2 {
+    margin-bottom: 20px;
+    color: #06C05F;
+}
+
+.container form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.container form input[type="text"],
+.container form input[type="password"],
+.container form input[type="submit"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin: 0 auto; /* Centering the input fields horizontally */
+}
+
+.container form input[type="submit"] {
+    background-color: #06C05F;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.container form input[type="submit"]:hover {
+    background-color: #038a44;
+}
+
+.container a,
+.logout-link {
+    color: #06C05F;
+    text-decoration: none;
+}
+
+.container a:hover,
+.logout-link:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,138 @@
+{
+
+    "consensus_conclusion": [
+        "You need to reason to get the answer to the task based on the following information.",
+        "The task is: {task}",
+        "Here is a conversation between two agents working around this task:",
+        "{agent_communication}",
+        "Here is the rationale collected by one agent:",
+        "{infonav_instructor}",
+        "Here is the rationale collected by the other agent:",
+        "{infonav_assistant}",
+        "Ignore the conflicts between two rationales and use the cross-verified information in two rationales to make reasoning.",
+        "The answer should be detailed and can include Markdown format for better clarity.",
+        "Feel free to use lists, tables, or other Markdown elements to enhance your response.",
+        "RETURN THE MOST POSSIBLE ANSWER to the task based on these information in Markdown format."
+    ],
+
+    "conclusion": [
+        "You need to reason to get the answer to the task based on the following information.",
+        "The task is: {task}",
+        "Here is a conversation between two agents working around this task:",
+        "{agent_communication}",
+        "The answer should be detailed and can include Markdown format.",
+        "You can provide a comprehensive response using lists, tables, or any other Markdown elements for clarity.",
+        "RETURN THE MOST POSSIBLE ANSWER to the task in Markdown format."
+    ],
+
+    "raise_new_communication": [
+        "As a smart agent, you need to pick one person that may be beneficial to solve the given task, then only return the name of the chosen person",
+        "now this is the task you need to resolve :",
+        "{task}",
+        "here is a set of all person:",
+        "{{ {friends} }}",
+        "1. You HAVE TO PICK ONE PERSON BASED ON THE TASK: {task}.",
+        "2. IF you can not decide, then just random pick one.",
+        "3. The CHOSEN NAME MUST BE IN THE GIVEN SET.",
+        "4. You CAN NOT PICK {yourself} OR {contact}.",
+        "for example, if the person list is {{alice,bob,charlie}}, and you choose charlie based on the description of the task, you should simply only return like:",
+        "charlie",
+        "ONLY return the NAME of your chosen person"
+    ],
+    "json_reformat": [
+        "Please reformat the given text strictly according to the specified json format.",
+        "You must make sure that each value in the json has the same type with the one in specified json format.",
+        "if there is ' in the key or value of json, replace it with \"",
+        "the given text is {text}. ",
+        "the specified json format is {json_format}.",
+        "YOU MUST ONLY return the reformatted json. DO NOT Change the VALUE, ONLY REFORMAT"
+    ],
+    "json_reformat_woreference": [
+        "Please reformat the given text to a standard json format.",
+        "You must make sure that each value in the json is a valid string.",
+        "if there is ' in the key or value of json, replace it with \"",
+        "the given text is {text}. ",
+        "YOU MUST ONLY return the reformatted json."
+    ],
+    "infonav_init": [
+        "You need to generate one paragraph with all facts which are necessary for solving the task.",
+        "These facts are unknown for now and you will ask and cooperate with the other agent to acquire the information of these facts",
+        "For example, if the task is 'if jesky can attend the meeting with alpha', an example paragraph would be:",
+        "\"I should cooperate with another agent to solve the task of 'if jesky can attend the meeting with alpha', we need to know the schedule of jesky, the place and time of the meeting with alpha.\"",
+        "RETURN ONLY RETURN THE paragraph."
+    ],
+    "infonav_mark": [
+        "You had a plan for solving a task.",
+        "The plan is a paragraph containing some facts that need to be filled with acquired information",
+        "You need to mark all facts with square brackets like '[]'",
+        "For example, if the task is 'if jesky can attend the meeting with alpha', and the plan is:",
+        "\"I should cooperate with another agent to solve the task of 'if jesky can attend the meeting with alpha', we need to know the schedule of jesky, the place and time of the meeting with alpha.\"",
+        "Then you should mark this plan and return it like:",
+        "\"I should cooperate with another agent to solve the task of 'if jesky can attend the meeting with alpha', we need to know the [schedule of jesky], the [place and time of the meeting with alpha].\"",
+        "Now the task is: {task}",
+        "The plan is:",
+        "\"{infonav}\"",
+        "RETURN ONLY THE MARKED PLAN."
+    ],
+    "infonav_update": [
+        "Here is the plan with several facts to help progress the communication and solve the problem.",
+        "\"{infonav}\"",
+        "Some facts are known currently in the mark of (), which are:",
+        "\"{known_facts}\"",
+        "Some facts are still unknown in the mark of [], which are:",
+        "\"{unknown_facts}\"",
+        "You need fill in some unknown facts with one simple sentence based on current communication history with another agent",
+        "return the facts you filled, in the format of json, for example, if the plan is:",
+        "\"I should cooperate with another agent to solve the task of 'if jesky can attend the meeting with alpha', we need to know the [schedule of jesky], the [place and time of the meeting with alpha].\"",
+        "and if you can confirm the time of meeting is 5:00 pm at beijing based on your cooperation with other agent for now, then you should return",
+        "{{'place and time of the meeting with alpha':'5:00 pm at beijing'}}",
+        "REMEBER, THE KEY IN THE JSON SHOULD BE EXACTLY THE SAME IN THE [] marks",
+        "You must return json strictly according to the above format and YOU MUST ONLY RETURN THE JSON"
+    ],
+    "sql_react": [
+        "You need to decide how to use sql to retrieve chat history from {condition} for solving the task,",
+        "You need to provide one or multiple keywords or keyphrases, the windows size and total number of messages.",
+        "the keywords and keyphrases should be entity or words/phrases containing the key information in the task",
+        "multiple keywords or keyphrases should be seperated by the mark /",
+        "for example, if the task is 'who stole the ring of alice?', the keywords or keyphrases may be 'ring/alice/steal',",
+        "and if you decide to retrieve chat context of messages containing this keyword with a context window size of 3,",
+        "and the limit on total number of messages is 10, then you should return a json as follows:",
+        "{example_json}",
+        "here are some observations, you need to mofidy your previous parameter for sql based on these observations for better solving the task:",
+        "OBSERVATION 1: your previous parameters for sql:",
+        "{previous_params}:",
+        "OBSERVATION 2: your previous sql executation results with the this params:",
+        "{previous_sql_result}",
+        "OBSERVATION 3: current communication progress on this task:",
+        "{agent_communication}",
+        "Based on these observations, you must choose keywords/keyphrases and modify the previous keywords/keyphrases,",
+        "and adjust window size and limit based on your need to better solve the task",
+        "Now ONLY return the json."
+    ],
+    "faiss_react": [
+        "You need to generate a query about the task and a topk parameter for searching chat history and solving the task.",
+        "if the generated query is '{task}' and the topk is set to 3, ",
+        "then you should fill your rewritten query and chosen topk in a json and return it in the format of:",
+        "{example_json}",
+        "here are some observations, you need to mofidy your previous parameter for searching based on these observations for better solving the task:",
+        "OBSERVATION 1: your previous parameters for searching:",
+        "{previous_params}:",
+        "OBSERVATION 2: your previous ,faiss executation results with the this params:",
+        "{previous_faiss_result}",
+        "OBSERVATION 3: current communication progress on this task:",
+        "{agent_communication}",
+        "Based on these observations, you must choose and modify the previous query,",
+        "and adjust topk based on your need to better solve the task",
+        "Now ONLY return the json."
+    ],
+    "rewrite_task": [
+        "Here is a question from {sender} to {receiver}: {task}",
+        "Now rewrite it to clarify the reference.",
+        "The rewritten message should not contain pronouns like he/his/she/her/their/them.",
+        "For example,",
+        "a message of 'who's your teacher' from Alice to Bob should be rewritten to 'Alice asks who is Bob's teacher'.",
+        "And you should only return 'Alice asks who is Bob's teacher' in this example.",
+        "Only change pronouns, do not change any other words. Keep the format of the question, like what/who/why/where/when.",
+        "RETURN ONLY the rewritten message."
+    ]
+}

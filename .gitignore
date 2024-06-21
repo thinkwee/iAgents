@@ -1,0 +1,9 @@
+report
+__pycache__/
+logs/
+downloads/*
+.idea
+exp/Friends
+exp/Needle
+exp/Schedule
+static/profile_pics/*

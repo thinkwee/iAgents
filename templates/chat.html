@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='chat_style.css') }}">
+</head>
+
+<body>
+    <div class="chat-container">
+
+        <div class="friend-list">
+            <div class="container">
+
+                <div class="user-avatar-container">
+
+                    <div class="current-user-avatar">
+                        <img src="{{ url_for('static', filename=current_user_avatar_path) }}"
+                            alt="{{ session['name'] }}'s Avatar" class="avatar">
+                    </div>
+
+
+                    <div class="change-avatar-buttons">
+                        <button id="change-avatar-button" class="change-avatar-button">Change User Avatar</button>
+                        <button id="change-agent-avatar-button" class="change-agent-avatar-button">Change Agent
+                            Avatar</button>
+                    </div>
+                </div>
+
+
+                <input type="file" id="avatar-file-input" style="display: none;" accept="image/*">
+                <input type="file" id="agent-avatar-file-input" style="display: none;" accept="image/*">
+
+                <div class="user-panel-container">
+
+                    <button class="agent-admin-panel-button">Agent Admin Panel</button>
+                </div>
+
+                <h3>{{ session['name'] }}'s Friends</h3>
+                <form method="post" action="/add_friend">
+                    <input type="text" name="friend_name" placeholder="Add more friend ..." required>
+                    <input type="submit" value="Add">
+                </form>
+                <ul>
+                    {% for friend in friend_list %}
+                    <li><a href="/chat?chat={{ friend[0] }}">{{ friend[0] }}</a></li>
+                    {% endfor %}
+                </ul>
+
+
+                <div class="logout-container">
+                    <a class="logout-link" href="/logout">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-history-container">
+            <div class="chat-history" id="chat-history">
+                <ul id="message-list">
+
+                </ul>
+            </div>
+            <form class="message-input" id="message-form">
+                <textarea name="message" id="message-input" placeholder="Type a message..." required></textarea>
+                <input type="hidden" name="receiver" id="receiver" value="{{ friend_name }}">
+                <input type="submit" value="Send">
+            </form>
+        </div>
+
+        <div id="loading-indicator" style="display: none;">
+            <p style="text-align: center; font-style: italic;">Agent is processing your request...</p>
+        </div>
+
+        <script>
+            let previousChat = '';
+
+            function fetchMessages() {
+                const currentChat = document.getElementById('receiver').value;
+                if (currentChat) {
+                    fetch(`/get_messages?chat=${currentChat}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to fetch messages');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            const messageList = document.getElementById('message-list');
+                            messageList.innerHTML = '';
+                            data.messages.forEach(message => {
+                                const li = document.createElement('li');
+                                li.classList.add('message-item');
+
+
+                                let bubbleClass = 'received_bubble';
+                                let alignClass = 'left';
+                                if (message.sender === '{{ session["name"] }}') {
+                                    bubbleClass = 'sent_bubble';
+                                    alignClass = 'right';
+                                } else if (message.sender.endsWith("'s Agent")) {
+                                    if (message.sender.startsWith('{{ session["name"] }}')) {
+                                        bubbleClass = 'agent_sent_bubble';
+                                        alignClass = 'right';
+                                    } else {
+                                        bubbleClass = 'agent_receive_bubble';
+                                    }
+                                }
+
+
+                                const messageContainer = document.createElement('div');
+                                messageContainer.className = `chat-message ${alignClass}`;
+
+
+                                const senderInfo = document.createElement('div');
+                                senderInfo.className = `sender-info ${alignClass}`;
+
+
+                                const senderAvatar = document.createElement('img');
+                                senderAvatar.src = message.sender_profile_image_url;
+                                senderAvatar.alt = `${message.sender}'s avatar`;
+                                senderAvatar.classList.add('avatar');
+
+
+                                const senderName = document.createElement('div');
+                                senderName.classList.add('sender-name');
+                                senderName.textContent = message.sender;
+
+                                senderInfo.appendChild(senderAvatar);
+                                senderInfo.appendChild(senderName);
+
+
+                                const messageContent = document.createElement('div');
+                                messageContent.innerHTML = `<span>${message.message}</span>`;
+                                messageContent.classList.add('message-content');
+                                messageContent.classList.add(bubbleClass);
+
+
+                                if (alignClass === 'left') {
+                                    messageContainer.appendChild(senderInfo);
+                                    messageContainer.appendChild(messageContent);
+                                } else {
+                                    messageContainer.appendChild(messageContent);
+                                    messageContainer.appendChild(senderInfo);
+                                }
+
+                                li.appendChild(messageContainer);
+                                messageList.appendChild(li);
+
+                                if (message.raw_message.includes('[Conclusion on Agents\' Communication ]:')) {
+
+                                    const feedbackLi = document.createElement('li');
+                                    feedbackLi.className = message.sender.startsWith('{{ session["name"] }}') ? 'feedback_bubble_sent' : 'feedback_bubble_recv';
+                                    feedbackLi.innerHTML = `<strong><span>Rate this agents' communication</span></strong>`;
+
+
+                                    const feedbackDiv = document.createElement('div');
+                                    feedbackDiv.className = 'feedback-buttons';
+
+                                    const likeButton = document.createElement('button');
+                                    likeButton.textContent = '👍';
+                                    likeButton.addEventListener('click', function () {
+                                        sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, 'like');
+                                    });
+
+                                    const dislikeButton = document.createElement('button');
+                                    dislikeButton.textContent = '👎';
+                                    dislikeButton.addEventListener('click', function () {
+                                        sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, 'dislike');
+                                    });
+
+                                    feedbackDiv.appendChild(likeButton);
+                                    feedbackDiv.appendChild(dislikeButton);
+
+                                    feedbackLi.appendChild(feedbackDiv);
+
+                                    messageList.appendChild(feedbackLi);
+                                }
+                            });
+
+                            if (currentChat !== previousChat) {
+                                document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+                            }
+                            previousChat = currentChat;
+                        })
+                        .catch(error => console.error('Error fetching messages:', error));
+                }
+            }
+
+            function sendFeedback(conclusion, communication_history, sender, receiver, feedback) {
+                var conclusion = decodeURIComponent(conclusion);
+                var communication_history = decodeURIComponent(communication_history);
+
+                fetch('/send_feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        conclusion: conclusion,
+                        feedback: feedback,
+                        sender: sender,
+                        receiver: receiver,
+                        communication_history: communication_history
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Feedback sent successfully');
+                        } else {
+                            console.error('Error sending feedback:', data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error sending feedback:', error);
+                    });
+            }
+
+            fetchMessages();
+
+            setInterval(fetchMessages, 3000);
+
+            document.getElementById('message-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                sendMessage();
+            });
+
+            function sendMessage() {
+                const formData = new FormData(document.getElementById('message-form'));
+                const message = formData.get('message');
+                const receiver = formData.get('receiver');
+                const sender = "{{ session['name'] }}";
+                formData.append('sender', sender);
+
+                if (!message || !receiver) {
+                    console.error('Error sending message: Receiver and message are required');
+                    return;
+                }
+
+                if (message.startsWith('@')) {
+                    document.getElementById('loading-indicator').style.display = 'block';
+                    fetch('/execute_agent?receiver=' + receiver + '&message=' + message + '&sender=' + sender)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to execute agent');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            formData.set('message', "[Conclusion on Agents' Communication ]: " + data.agent_response);
+                            formData.set('sender', sender + "'s Agent");
+                            formData.set('communication_history', data.communication_history);
+
+                            sendMessageNow(formData);
+                        })
+                        .catch(error => console.error('Error executing agent:', error));
+                } else {
+                    sendMessageNow(formData);
+                }
+            }
+
+            function sendMessageNow(formData) {
+                fetch('/send_message', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to send message');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            fetchMessages();
+                            document.getElementById('message-input').value = '';
+                            document.getElementById('loading-indicator').style.display = 'none';
+                        } else {
+                            console.error('Error sending message:', data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error sending message:', error));
+            }
+
+            document.getElementById('message-input').addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    sendMessage();
+                } else if (event.key === 'Enter' && event.metaKey) {
+                    this.value += '\n';
+                }
+            });
+
+
+            document.getElementById('change-avatar-button').addEventListener('click', function () {
+                document.getElementById('avatar-file-input').click();
+            });
+
+            document.getElementById('change-agent-avatar-button').addEventListener('click', function () {
+                document.getElementById('agent-avatar-file-input').click();
+            });
+
+            document.getElementById('avatar-file-input').addEventListener('change', function () {
+                uploadAvatar(this.files[0], '/upload_avatar');
+            });
+
+            document.getElementById('agent-avatar-file-input').addEventListener('change', function () {
+                uploadAvatar(this.files[0], '/upload_agent_avatar');
+            });
+
+            function uploadAvatar(file, url) {
+                const formData = new FormData();
+                formData.append('avatar', file);
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                }).finally(() => {
+                    location.reload();
+                });
+
+
+            }
+        </script>
+    </div>
+</body>
+
+</html>
