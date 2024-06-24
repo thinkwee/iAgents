@@ -62,5 +62,8 @@ of the famous TV series [Friends](https://en.wikipedia.org/wiki/Friends), involv
   - import the preset database by running ``mysql -u YOUR_MYSQL_USERNAME -p DATABASE_NAME < ./data/FriendsTV.sql``
   - start the **iAgents** by running ``python3 app.py``
   - goto the **iAgents** web UI and login as any [character](data/FriendsTV_alluser.txt) in the TV series *Friends*. The password is the same as user name.
+- Below gives the example of login the **iAgents** with the username of "ross"
+![wiki5](static/wiki5.png)
+
 ## Framework
 
