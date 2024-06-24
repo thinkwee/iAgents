@@ -65,6 +65,7 @@
 ## 🗺️ RoadMap
 - [ ] Dockerfile
 - [ ] Support uploading files as human user information source
+- [ ] Customizable human information access authorization
 - [ ] Fuzzy memory
 - [ ] InfoNav visualizer
 - [ ] Add more preset databases for experience

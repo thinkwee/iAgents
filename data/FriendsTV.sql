@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.3.0, for macos14.2 (arm64)
 --
--- Host: localhost    Database: FRIEND_PUBLIC
+-- Host: localhost    Database: FriendsTV
 -- ------------------------------------------------------
 -- Server version	8.0.31
 
