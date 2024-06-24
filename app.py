@@ -342,6 +342,6 @@ def execute_agent():
 
 if __name__ == '__main__':
     HOST = global_config.get("website", {}).get("host", "127.0.0.1")
-    PORT = global_config.get("website", {}).get("port", 5000)
+    PORT = global_config.get("website", {}).get("port", 6060)
     print(f"iagents is available at http://{HOST}:{PORT}/login")
     app.run(host=HOST, debug=True, port=PORT, use_reloader=False)
