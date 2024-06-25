@@ -7,7 +7,7 @@ import yaml
 from backend.gemini import query_gemini
 from backend.gpt import query_claude, query_gpt, query_gpt4
 from iagents.tool import FaissTool, JsonFormatTool, MindFillTool, SqlTool
-from iagents.util import AvatarLogger
+from iagents.util import iAgentsLogger
 
 # load global config
 file_path = os.path.dirname(__file__)
@@ -153,7 +153,7 @@ class Agent(ABC):
         """
         query_str = self.assemble_prompt(receiver, communication_history)
         response = self.query_func(query_str)
-        AvatarLogger.log(query_str, 
+        iAgentsLogger.log(query_str, 
                          response,
                          "Query to generate message from {} to {}".format(self.master, receiver))
         return response
@@ -170,7 +170,7 @@ class Agent(ABC):
         """
         raw_response = self._query(receiver, communication_history)
         response = raw_response
-        AvatarLogger.log(instruction="response generated from {} to {}\nthe reformatted message:\n{}".format(self.master, receiver, response))
+        iAgentsLogger.log(instruction="response generated from {} to {}\nthe reformatted message:\n{}".format(self.master, receiver, response))
         return response
 
     def conclusion(self, communication_history) -> str:
@@ -185,7 +185,7 @@ class Agent(ABC):
         query_str = "\n".join(self.tool_prompt['conclusion']).format(agent_communication="\n".join(communication_history), 
                                                                      task=self.task)
         response = self.query_func(query_str)
-        AvatarLogger.log(query_str, response, "[Conclusion]")
+        iAgentsLogger.log(query_str, response, "[Conclusion]")
         return response
 
     def get_friends(self) -> str:
@@ -316,13 +316,13 @@ class ThinkAgent(VanillaAgent):
         if self.infonav_status < 2:
             query_think = self.assemble_prompt_think(receiver, communication_history)
             self.infonav_plan = self.query_func(query_think)
-            AvatarLogger.log(query_think, self.infonav_plan,
+            iAgentsLogger.log(query_think, self.infonav_plan,
                              "[Init infonav from {} to {}:]".format(self.master, receiver))
 
             # mark the infonav (invoke assemble_prompt_think again, but self.infonav_status changed)
             query_think = self.assemble_prompt_think(receiver, communication_history)
             self.infonav_plan = self.query_func(query_think)
-            AvatarLogger.log(query_think, self.infonav_plan,
+            iAgentsLogger.log(query_think, self.infonav_plan,
                              "[Mark infonav from {} to {}:]".format(self.master, receiver))
 
             # list all unknown facts in the infonav
@@ -332,7 +332,7 @@ class ThinkAgent(VanillaAgent):
         else:
             query_think = self.assemble_prompt_think(receiver, communication_history)
             updated_facts = self.query_func(query_think)
-            AvatarLogger.log(query_think, updated_facts,
+            iAgentsLogger.log(query_think, updated_facts,
                              "[Updated facts from {} to {}:]".format(self.master, receiver))
             self.infonav_plan = self.mindfill_tool.fill_mind(self.infonav_plan, updated_facts)
 
@@ -340,7 +340,7 @@ class ThinkAgent(VanillaAgent):
         query_action = self.assemble_prompt(receiver, communication_history, current_chat_history,
                                             other_chat_history)
         response = self.query_func(query_action)
-        AvatarLogger.log(query_action, response,
+        iAgentsLogger.log(query_action, response,
                          "[Query to generate message from {} to {}]".format(self.master, receiver))
         return response
 
@@ -404,11 +404,11 @@ class MemoryAgent(ThinkAgent):
                                                                                            previous_sql_result=self.previous_sql_result_cur,
                                                                                            agent_communication="\n".join(communication_history))
             response = self.query_func(query_prompt)
-            AvatarLogger.log(query_prompt, response, "[generate sql query by {}:]".format(self.master))
+            iAgentsLogger.log(query_prompt, response, "[generate sql query by {}:]".format(self.master))
             response_json = self.json_tool.json_reformat(response, response_json_format)
             response_json = eval(response_json)
             sql_keywords = set(re.split("/| |'|\"", response_json['keyword'].lower())) - self.stopwords
-            AvatarLogger.log(instruction="[SQL Keywords Set:] {}".format(str(sql_keywords)))
+            iAgentsLogger.log(instruction="[SQL Keywords Set:] {}".format(str(sql_keywords)))
             distinct_memories = []
             for keyword in sql_keywords:
                 sql_execute_results = self.sql_tool.get_context_bykeyword_current(keyword=keyword, 
@@ -422,7 +422,7 @@ class MemoryAgent(ThinkAgent):
                 result_str += f"from {message[2]} to {message[3]}: {message[4]}\n"
             self.previous_sql_result_cur = result_str
             self.previous_sql_params_cur = str(response_json)
-            AvatarLogger.log(
+            iAgentsLogger.log(
                 instruction="[Distinct Memory (with current contact) Retrieved results of {}:] \n{}".format(self.master, result_str))
 
         return result_str
@@ -444,11 +444,11 @@ class MemoryAgent(ThinkAgent):
                                                                                            previous_sql_result=self.previous_sql_result,
                                                                                            agent_communication="\n".join(communication_history))
             response = self.query_func(query_prompt)
-            AvatarLogger.log(query_prompt, response, "[sql query prompt to {}:]".format(self.master))
+            iAgentsLogger.log(query_prompt, response, "[sql query prompt to {}:]".format(self.master))
             response_json = self.json_tool.json_reformat(response, response_json_format)
             response_json = eval(response_json)
             sql_keywords = set(re.split("/| |'|\"", response_json['keyword'].lower())) - self.stopwords
-            AvatarLogger.log(instruction="[SQL Keywords Set:] {}".format(str(sql_keywords)))
+            iAgentsLogger.log(instruction="[SQL Keywords Set:] {}".format(str(sql_keywords)))
             distinct_memories = []
             for keyword in sql_keywords:
                 sql_execute_results = self.sql_tool.get_context_bykeyword(keyword, self.master, receiver,
@@ -460,7 +460,7 @@ class MemoryAgent(ThinkAgent):
                 result_str += f"from {message[2]} to {message[3]}: {message[4]}\n"
             self.previous_sql_result = result_str
             self.previous_sql_params = str(response_json)
-            AvatarLogger.log(
+            iAgentsLogger.log(
                 instruction="[Distinct Memory Retrieved results of {}:] \n{}".format(self.master, result_str))
 
         # add fuzzy memory
@@ -476,14 +476,14 @@ class MemoryAgent(ThinkAgent):
                                                                                              previous_faiss_result=self.previous_faiss_result,
                                                                                              agent_communication="\n".join(communication_history))
             response = self.query_func(query_prompt)
-            AvatarLogger.log(query_prompt, response, "[faiss query prompt to {}:]".format(self.master))
+            iAgentsLogger.log(query_prompt, response, "[faiss query prompt to {}:]".format(self.master))
             response_json = self.json_tool.json_reformat(response, response_json_format)
             response_json = eval(response_json)
             query = response_json['query']
             topk = response_json['topk']
             ret_dis, ret_indices, ret_text = self.faiss_tool.query(query, topk)
             result_str += "\n\n{}".format("\n".join(ret_text))
-            AvatarLogger.log(instruction="[Fuzzy Memory Retrieved results of {}:] \n{}".format(self.master, "\n".join(ret_text)))
+            iAgentsLogger.log(instruction="[Fuzzy Memory Retrieved results of {}:] \n{}".format(self.master, "\n".join(ret_text)))
             self.previous_faiss_params = str(response_json)
             self.previous_faiss_result = "\n".join(ret_text)
 

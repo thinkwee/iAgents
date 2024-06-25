@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 from iagents.sql import *
 from iagents.mode import Mode
-from iagents.util import AvatarLogger
+from iagents.util import iAgentsLogger
 import markdown
 
 # Load global config with error handling
@@ -31,7 +31,7 @@ current_timestamp = datetime.now().timestamp()
 current_datetime = datetime.fromtimestamp(current_timestamp)
 timestamp = current_datetime.strftime("%Y-%m-%d-%H-%M-%S")
 
-AvatarLogger.set_log_path(file_timestamp=timestamp)
+iAgentsLogger.set_log_path(file_timestamp=timestamp)
 logname = global_config.get('logging', {}).get('logname', 'application')
 loglevel = global_config.get('logging', {}).get('level', 'INFO').upper()
 

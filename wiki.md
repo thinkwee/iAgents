@@ -52,6 +52,10 @@ mode:
     It facilitates the analysis of agents' behaviour.
 
 ## Collect Feedback
+<p align="center">
+  <img src='./static/wiki7.png' width=300>
+</p>
+
 - After each agents' communication you can give your feedback on this communication by clicking the 👍/👎 buttons. It will records the communication along with the feedback in the feedback table in your database.
 
 ## Interact with Preset Database
@@ -66,4 +70,77 @@ of the famous TV series [Friends](https://en.wikipedia.org/wiki/Friends), involv
 ![wiki5](static/wiki5.png)
 
 ## Framework
+![wiki6](static/wiki6.png)
+- Above shows the overall system architecture of **iAgents**.
+- The main code of **iAgents** is under the ``iagents/`` path, where
+  - agent.py: define the agent class. it orchestrates what agents can observe, how to assemble the system prompts for agents and send the query to LLM backends.
+  - communication.py: handle the autonomous communication among agents
+  - mode.py: preset configurations for agents type and communication type
+  - sql.py: base class for all interaction with mysql in **iAgents**
+  - tool.py: tools for agents' call, including the InfoNav, mysql, json reformat.
+  - util.py: iAgentsLogger class
+- All prompts are included under the ``prompts/`` path, including
+  - system prompt for instructor agent
+  - system prompt for assistant agent
+  - tool prompt
 
+
+## Database Structure
+```mysql
+--
+-- Table structure for table `chats`
+--
+
+CREATE TABLE `chats` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `sender` varchar(255) NOT NULL,
+  `receiver` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `communication_history` text,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11594 DEFAULT CHARSET=utf8mb3;
+
+--
+-- Table structure for table `feedback`
+--
+
+CREATE TABLE `feedback` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `sender` varchar(255) NOT NULL,
+  `receiver` varchar(255) NOT NULL,
+  `conclusion` text NOT NULL,
+  `communication_history` text,
+  `feedback` varchar(255) NOT NULL,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Table structure for table `friendships`
+--
+
+CREATE TABLE `friendships` (
+  `user_id` int NOT NULL,
+  `friend_id` int NOT NULL,
+  PRIMARY KEY (`user_id`,`friend_id`),
+  KEY `friend_id` (`friend_id`),
+  CONSTRAINT `friendships_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `friendships_ibfk_2` FOREIGN KEY (`friend_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `friendships_chk_1` CHECK ((`user_id` <> `friend_id`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `profile_image_path` varchar(255) DEFAULT 'default.png',
+  `agent_profile_image_path` varchar(255) DEFAULT 'default_agent.png',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1140 DEFAULT CHARSET=utf8mb3;
+```

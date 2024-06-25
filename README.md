@@ -65,17 +65,18 @@
 ## 🗺️ RoadMap
 -  **iAgents** aims to explore a new Multi-Agent paradigm, where the value of agents is attributed to its human user's information, enhancing collaborative efficiency between humans and agents in coexistent societies. Currently, iAgents is in the academic prototype stage. **⚠️ Please do not use it in production environments.** We will continuously improve the functionality of **iAgents**. Below is our current roadmap, ordered from short-term to long-term goals:
 
-- [ ] Dockerfile
-- [ ] Support uploading files as human user information source
-- [ ] Customizable human information access authorization
-- [ ] InfoNav visualizer
-- [ ] Agent Cultivate
-- [ ] Add more preset databases for experience
-- [ ] Fuzzy memory
-- [ ] Switching between different agent types (structure/prompts/information access range)
-- [ ] Customizable reasoning class
-- [ ] Distributed deployment
-- [ ] Edge-side model support
+   - [ ] Dockerfile
+   - [ ] Support uploading files as human user information source
+   - [ ] Customizable human information access authorization
+   - [ ] InfoNav visualizer
+   - [ ] Agent Cultivate
+   - [ ] Add more preset databases for experience
+   - [ ] Fuzzy memory
+   - [ ] Enable agents proactively raising new communication
+   - [ ] Switching between different agent types (structure/prompts/information access range)
+   - [ ] Customizable reasoning class
+   - [ ] Distributed deployment
+   - [ ] Edge-side model support
 
 ## 👨‍💻‍ Contributors
 

@@ -18,7 +18,7 @@ except yaml.YAMLError as e:
     raise Exception(f"Error parsing YAML file: {config_path}\n{e}")
 
 
-class AvatarLogger:
+class iAgentsLogger:
     """Logger class for handling structured logging to CSV files."""
 
     logger = None  # Class variable for the logger instance

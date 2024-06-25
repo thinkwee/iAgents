@@ -11,7 +11,7 @@ import pandas as pd
 import yaml
 
 from iagents.sql import *
-from iagents.util import AvatarLogger
+from iagents.util import iAgentsLogger
 from openai import OpenAI
 
 from tenacity import retry
@@ -93,7 +93,7 @@ class FaissTool(Tool):
                 ret_indices.append(indices[0][i])
                 ret_text.append(self.text_memory[indices[0][i]])
 
-        AvatarLogger.log(text, "\n".join(["{}: {}".format(dis, ans) for dis, ans in zip(ret_dis, ret_text)]),
+        iAgentsLogger.log(text, "\n".join(["{}: {}".format(dis, ans) for dis, ans in zip(ret_dis, ret_text)]),
                          "Executing Faiss")
 
         return ret_dis, ret_indices, ret_text
@@ -231,7 +231,7 @@ class SqlTool(Tool):
     def execute_sql(self, sql_command, params=None):
         full_sql_command = "SQL COMMAND:\n{}\nPARAMS:\n{}\n".format(str(sql_command), str(params))
         sql_results = exec_sql(sql_command=sql_command, params=params)
-        AvatarLogger.log(full_sql_command, "\n".join([str(item) for item in sql_results]), "Executing SQL")
+        iAgentsLogger.log(full_sql_command, "\n".join([str(item) for item in sql_results]), "Executing SQL")
         return sql_results
 
 
@@ -281,7 +281,7 @@ class JsonFormatTool(Tool):
                 return text
             input_text = reformat_prompt.format(text=text, json_format=json_format_str)
             text = self.query_func(input_text)
-            AvatarLogger.log(input_text, text, "Trial {}. on reformatting json text".format(str(try_idx)))
+            iAgentsLogger.log(input_text, text, "Trial {}. on reformatting json text".format(str(try_idx)))
             sleep(1)
         if self.json_check(text, json_format):
             return text
@@ -307,7 +307,7 @@ class JsonFormatTool(Tool):
                 return text
             input_text = reformat_prompt.format(text=text)
             text = self.query_func(input_text)
-            AvatarLogger.log(input_text, text, "Trial {} on reformatting json text".format(str(try_idx)))
+            iAgentsLogger.log(input_text, text, "Trial {} on reformatting json text".format(str(try_idx)))
             sleep(1)
         if self.json_check(text, dict()):
             return text
@@ -353,7 +353,7 @@ class MindFillTool(Tool):
             if "[{}]".format(key) in infonav and key in self.unknown_facts:
                 infonav = infonav.replace("[{}]".format(key),
                                           "[{}](Solved, which is {})".format(key, str(filled_json[key])))
-                AvatarLogger.log(
+                iAgentsLogger.log(
                     instruction="[update pinned facts]: {} --> {}".format(key, str(filled_json[key])))
                 if "unknown" not in str(filled_json[key]).lower():
                     self.unknown_facts.remove(key)

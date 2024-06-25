@@ -115,7 +115,7 @@ class VanillaCommunication(BaseCommunication):
     def communicate(self) -> str:
         round_index = 0
         while round_index < self.max_round:
-            AvatarLogger.log(instruction="[Comm Round: {}]".format(round_index))
+            iAgentsLogger.log(instruction="[Comm Round: {}]".format(round_index))
             round_index += 1
 
             if round_index == 1:
@@ -147,7 +147,7 @@ class VanillaCommunication(BaseCommunication):
                                                    self.assistant.infonav_plan)
         else:
             conclusion = self.instructor.conclusion(self.communication_history)
-        AvatarLogger.log(instruction="[conclusion]:\n{}".format(conclusion))
+        iAgentsLogger.log(instruction="[conclusion]:\n{}".format(conclusion))
         return conclusion
 
     def send_message_agent(self, sender, receiver, message):
@@ -182,7 +182,7 @@ class VanillaCommunication(BaseCommunication):
             infonav_assistant=infonav_assistant)
         response = self.instructor.query_func(query_str)
 
-        AvatarLogger.log(query_str, response, "[consensus_conclusion]")
+        iAgentsLogger.log(query_str, response, "[consensus_conclusion]")
         return response
 
 
@@ -226,17 +226,17 @@ class MultiPartyCommunication(VanillaCommunication):
         if not chosen_friend:
             chosen_friend = "None"
         chosen_friend = chosen_friend.lower().strip()
-        AvatarLogger.log(query_friends, chosen_friend,
+        iAgentsLogger.log(query_friends, chosen_friend,
                          "choose third-party friends from {}".format(agent.master))
 
         if chosen_friend not in friends_set:
-            AvatarLogger.log(instruction="Failed to find third-party for {}".format(agent.master))
+            iAgentsLogger.log(instruction="Failed to find third-party for {}".format(agent.master))
             self.send_message_agent(
                 agent, current_talking_agent,
                 "[Trigger {}'s Agents Raising New Communication with {}]".format(agent.master, "None"))
             return "None", "None"
         else:
-            AvatarLogger.log(instruction="Found third-party for {}, {}".format(agent.master, chosen_friend))
+            iAgentsLogger.log(instruction="Found third-party for {}, {}".format(agent.master, chosen_friend))
             self.send_message_agent(
                 agent, current_talking_agent,
                 "[Trigger {}'s Agents Raising New Communication with {}]".format(agent.master, chosen_friend))
@@ -263,7 +263,7 @@ class MultiPartyCommunication(VanillaCommunication):
     def communicate(self) -> str:
         round_index = 0
         while round_index < self.max_round:
-            AvatarLogger.log(instruction="[MultiComm Round: {}]".format(round_index))
+            iAgentsLogger.log(instruction="[MultiComm Round: {}]".format(round_index))
             round_index += 1
 
             if round_index == 1:
@@ -314,7 +314,7 @@ class MultiPartyCommunication(VanillaCommunication):
                                                    self.assistant.infonav_plan)
         else:
             conclusion = self.instructor.conclusion(self.communication_history)
-        AvatarLogger.log(instruction="[conclusion]:\n{}".format(conclusion))
+        iAgentsLogger.log(instruction="[conclusion]:\n{}".format(conclusion))
         return conclusion
 
 
@@ -332,7 +332,7 @@ class OfflineCommunication(VanillaCommunication):
     def send_message_agent(self, sender, receiver, message):
         sender = sender.master + "'s Agent"
         receiver = receiver.master + "'s Agent"
-        AvatarLogger.log(instruction="from {} to {}: {}".format(sender, receiver, message))
+        iAgentsLogger.log(instruction="from {} to {}: {}".format(sender, receiver, message))
 
     def format_agent_history(self, sender, receiver, message):
         message = "from {} to {}: {}".format(sender.master + "'s Agent", receiver.master + "'s Agent",

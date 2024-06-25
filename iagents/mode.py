@@ -52,7 +52,7 @@ class Mode():
                                                                               receiver=receiver,
                                                                               task=self.task)
             self.task = self.query_func(query_prompt)
-            AvatarLogger.log(query_prompt, self.task, "[rewrite task]")
+            iAgentsLogger.log(query_prompt, self.task, "[rewrite task]")
 
         self.realized_modes = {"Base"}
         assert self.mode_name in self.realized_modes, "{} not realized, iagents now supports: {}".format(
@@ -64,7 +64,7 @@ class Mode():
         global_config_str += "Global Agent Config:\n{}".format(str(self.global_config.get("agent"))) + "\n"
         global_config_str += "Global Mode Config:\n{}".format(str(self.global_config.get("mode"))) + "\n"
         global_config_str += "Global Database Config:\n{}".format(str(self.global_config.get("mysql").get("database"))) + "\n"
-        AvatarLogger.log(instruction=global_config_str)
+        iAgentsLogger.log(instruction=global_config_str)
 
     def get_instructor_agent(self):
         if self.mode_name in {'Base'}:
