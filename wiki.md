@@ -2,7 +2,10 @@
 
 ## How to use iAgents
 -   After you start the iAgents UI based on [quick start guide](README.md#⚡️-quickstart), open your browser and go to ``http://localhost:6060/login`` (by default), you will see the iAgents login page like:
-![wiki1](static/wiki1.png)
+<p align="center">
+  <img src='./static/wiki1.png' width=400>
+</p>
+
 -   You can register and login here. After you logged in, there will be chatting UI like following, where you can add your friends (through username), change the avatar of yourself and your agent.
 ![wiki2](static/wiki2.png)
 -   iAgents can be used as a regular IM web app,
