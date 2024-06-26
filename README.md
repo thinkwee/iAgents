@@ -8,7 +8,7 @@
 
 ## 📖 Overview
 
-- **iAgents** is a platform **towards creating a world interwind by humans and agents**, where each human has a personal **agent** that can work on behalf the human to cooperate with other humans' agent. It is a new paradiam for [Large Language Model-powered Multi-Agent Systems](). **iAgents** proactively interact with human users to exchange information, while autonomously communicating with other agents to eliminate information asymmetry and collaborate effectively to accomplish tasks ([see our paper](https://arxiv.org/abs/2406.14928)).
+- **iAgents** is a platform **towards creating a world interwind by humans and agents**, where each human has a personal **agent** that can work on behalf the human to cooperate with other humans' agent. It is a new paradiam for [Large Language Model-powered Multi-Agent Systems](https://thinkwee.top/multiagent_ebook/index.html). **iAgents** proactively interact with human users to exchange information, while autonomously communicating with other agents to eliminate information asymmetry and collaborate effectively to accomplish tasks ([see our paper](https://arxiv.org/abs/2406.14928)).
 
 <p align="center">
   <img src='./static/demo.png' width=1000>
