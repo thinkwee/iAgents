@@ -86,12 +86,11 @@ Made with [contrib.rocks](https://contrib.rocks).
 ## 🔎 Citation
 
 ```
-@article{iagents,
-      title = {Autonomous Agents for Collaborative Task under Information Asymmetry},
-      author = {Wei Liu and Chenxi Wang and Yifei Wang and Zihao Xie and Rennai Qiu and Yufan Dang Zhuoyun Du and Weize Chen and Cheng Yang and Chen Qian},
-      journal = {arXiv preprint arXiv:2406.14928},
-      url = {https://arxiv.org/abs/2406.14928},
-      year = {2024}
+@article{liu2024autonomous,
+  title={Autonomous Agents for Collaborative Task under Information Asymmetry},
+  author={Liu, Wei and Wang, Chenxi and Wang, Yifei and Xie, Zihao and Qiu, Rennai and Dang, Yufan and Du, Zhuoyun and Chen, Weize and Yang, Cheng and Qian, Chen},
+  journal={arXiv preprint arXiv:2406.14928},
+  year={2024}
 }
 ```
 
