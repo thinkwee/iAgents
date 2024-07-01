@@ -75,13 +75,6 @@
    - [ ] Distributed deployment
    - [ ] Edge-side model support
 
-## 👨‍💻‍ Contributors
-
-<a href="https://github.com/thinkwee/iAgents/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=thinkwee/iAgents" />
-</a>
-
-Made with [contrib.rocks](https://contrib.rocks).
 
 ## 🔎 Citation
 
