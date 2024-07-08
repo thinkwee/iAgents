@@ -8,7 +8,7 @@
 
 ## 📖 Overview
 
-- **iAgents** is a platform **designed to create a world intertwined with humans and agents**, where each human has a personal **agent** that can work on their behalf to cooperate with other humans' agents. It is a new paradigm for [Large Language Model-powered Multi-Agent Systems](https://thinkwee.top/multiagent_ebook/index.html). **iAgents** proactively interact with human users to exchange information, while autonomously communicating with other agents to eliminate information asymmetry and collaborate effectively to accomplish tasks ([see our paper](https://arxiv.org/abs/2406.14928)).
+- **iAgents** is a platform **designed to create a world weaved by humans and agents**, where each human has a personal **agent** that can work on their behalf to cooperate with other humans' agents. It is a new paradigm for [Large Language Model-powered Multi-Agent Systems](https://thinkwee.top/multiagent_ebook/index.html). **iAgents** proactively interact with human users to exchange information, while autonomously communicating with other agents to eliminate information asymmetry and collaborate effectively to accomplish tasks ([see our paper](https://arxiv.org/abs/2406.14928)).
 
 <p align="center">
   <img src='./static/demo.png' width=1000>
@@ -104,23 +104,15 @@
    - [ ] Distributed deployment
    - [ ] Edge-side model support
 
-## 👨‍💻‍ Contributors
-
-<a href="https://github.com/thinkwee/iAgents/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=thinkwee/iAgents" />
-</a>
-
-Made with [contrib.rocks](https://contrib.rocks).
 
 ## 🔎 Citation
 
 ```
-@article{iagents,
-      title = {Autonomous Agents for Collaborative Task under Information Asymmetry},
-      author = {Wei Liu and Chenxi Wang and Yifei Wang and Zihao Xie and Rennai Qiu and Yufan Dang Zhuoyun Du and Weize Chen and Cheng Yang and Chen Qian},
-      journal = {arXiv preprint arXiv:2406.14928},
-      url = {https://arxiv.org/abs/2406.14928},
-      year = {2024}
+@article{liu2024autonomous,
+  title={Autonomous Agents for Collaborative Task under Information Asymmetry},
+  author={Liu, Wei and Wang, Chenxi and Wang, Yifei and Xie, Zihao and Qiu, Rennai and Dang, Yufan and Du, Zhuoyun and Chen, Weize and Yang, Cheng and Qian, Chen},
+  journal={arXiv preprint arXiv:2406.14928},
+  year={2024}
 }
 ```
 
