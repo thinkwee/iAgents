@@ -23,7 +23,10 @@ def get_config_value(config, key, subkey, default=None):
 DATABASE_USER = get_config_value(global_config, "mysql", "username")
 DATABASE_PASSWD = get_config_value(global_config, "mysql", "password")
 DATABASE_PASSWD = str(DATABASE_PASSWD)
-HOST = get_config_value(global_config, "mysql", "host")
+if os.getenv("DOCKERIZED"):
+    HOST = "db"
+else:
+    HOST = get_config_value(global_config, "mysql", "host")
 DATABASE = get_config_value(global_config, "mysql", "database")
 
 # Ensure all necessary config values are present

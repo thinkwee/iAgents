@@ -37,7 +37,7 @@ loglevel = global_config.get('logging', {}).get('level', 'INFO').upper()
 
 logging.basicConfig(
     filename=os.path.join(project_path, "logs", f"{logname}_{timestamp}_raw.log"),
-    level=getattr(logging, loglevel, logging.INFO),
+    level=getattr(logging, loglevel, logging.DEBUG),
     format='[%(asctime)s %(levelname)s]\n%(message)s',
     datefmt='%Y-%d-%m %H:%M:%S',
     encoding="utf-8"
@@ -341,7 +341,10 @@ def execute_agent():
 
 
 if __name__ == '__main__':
-    HOST = global_config.get("website", {}).get("host", "localhost")
-    PORT = global_config.get("website", {}).get("port", 6060)
-    print(f"iagents is available at http://{HOST}:{PORT}/login")
+    HOST = global_config.get("website", {}).get("host", "0.0.0.0")
+    PORT = global_config.get("website", {}).get("port", 5000)
+    if os.getenv("DOCKERIZED"):
+        print(f"iagents is available at http://localhost:5001/login")
+    else:
+        print(f"iagents is available at http://localhost:{PORT}/login")
     app.run(host=HOST, debug=True, port=PORT, use_reloader=False)

@@ -10,7 +10,10 @@ global_config = yaml.safe_load(open(os.path.join(project_path, "config/global.ya
 
 DATABASE_USER = global_config.get("mysql").get("username")
 DATABASE_PASSWD = global_config.get("mysql").get("password")
-HOST = global_config.get("mysql").get("host")
+if os.getenv("DOCKERIZED"):
+    HOST = "db"
+else:
+    HOST = global_config.get("mysql").get("host")
 DATABASE = global_config.get("mysql").get("database")
 
 DB_CONNECT_TIMEOUT = 300

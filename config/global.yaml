@@ -4,8 +4,8 @@ backend:
   openai_api_key: YOUR_OPENAI_KEY_HERE
   base_url: 
 website:
-  host: localhost
-  port: 6060
+  host: 0.0.0.0
+  port: 5000
   flask_secret: iAgents
 mysql:
   host: localhost

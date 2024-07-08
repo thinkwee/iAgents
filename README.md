@@ -15,54 +15,83 @@
 </p>
 
 ## ⚡️ Quickstart
-
 - **iAgents** features an instant messaging web UI that users can utilize as a conventional chat application, with each user automatically equipped with a personal agent. Messages beginning with '@' are automatically transformed into collaborative task commands, prompting the agents of both chat participants to engage and resolve the task through autonomous communication.
-- Here is a quick start to use **iAgents**. You need to prepare:
+- Here we have quick start guides to use **iAgents** in both shell and docker modes.
+
+### 💻 Quickstart through Shell
+1. You need to prepare:
    - [Python environment of version 3.9 or higher](https://docs.anaconda.com/working-with-conda/environments/)
    - [MySQL environment]()
    - [OpenAI API key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
-- Then, follow these steps:
-1. **Clone the GitHub Repository:** Begin by cloning the repository using the command:
+
+2. **Clone the GitHub Repository:** Begin by cloning the repository using the command:
 
    ```
    git clone https://github.com/thinkwee/iAgents.git
    ```
 
-2. **Set Up Python Environment:** Ensure you have a version 3.9 or higher Python environment. You can create and activate this environment using the following commands, replacing `iAgents` with your preferred environment name:
+3. **Set Up Python Environment:** Ensure you have a version 3.9 or higher Python environment. You can create and activate this environment using the following commands, replacing `iAgents` with your preferred environment name:
 
    ```
    conda create -n iAgents python=3.9 -y
    conda activate iAgents
    ```
 
-3. **Install Dependencies:** Move into the `iAgents` directory and install the necessary dependencies by running:
+4. **Install Dependencies:** Move into the `iAgents` directory and install the necessary dependencies by running:
 
    ```
    cd iAgents
    pip3 install -r requirements.txt
    ```
 
-4. **Set Config File:** Set your config file ``config/global.yaml`` by filling out:
+5. **Set Config File:** Set your iAgents config file ``config/global.yaml`` by filling out:
    - backend.openai_api_key
    - mysql.username
    - mysql.password
 
-   These are necessary for starting **iAgents**. For the full config file, please see [here](wiki.md#configuration).
-5. **Initialize Your Database:** Run the Python script to create a MySQL database for storing the messages, users, friendships, and feedback tables in **iAgents**:
+   These three config options are necessary for starting **iAgents**. For the full config file, please see [here](wiki.md#configuration).
+6. **Initialize Your Database:** Run the Python script to create a MySQL database for storing the messages, users, friendships, and feedback tables in **iAgents**:
    ```
    python3 create_database.py
    ```
 
-6. **Start:** Simply execute:
+7. **Start:** Simply execute:
    ```
    python3 app.py
    ```
    to start the IM UI of **iAgents**. Invite your friend to register on the website, add them, and chat with them! **Add @ before your message** and see what happens!
 
+### 🐳 Quickstart through Docker
+1. Make sure you have [docker](https://www.docker.com/get-started/) installed.
+
+2. **Clone the GitHub Repository:** Begin by cloning the repository using the command:
+
+   ```
+   git clone https://github.com/thinkwee/iAgents.git
+   ```
+
+3. **Set Config File:** Set your iAgents config file ``config/global.yaml`` by filling out:
+   - backend.openai_api_key
+   - mysql.username
+   - mysql.password
+
+   and set your docker env config file ``.env``. **Make sure the iAgents config is consistent with docker env config**.
+
+   These three config options are necessary for starting **iAgents**. For the full config file, please see [here](wiki.md#configuration).
+
+4. build docker container:
+
+   ```
+   cd iAgents
+   docker-compose up
+   ```
+
+5. **Start:** now you can visit the ``localhost:5001/login`` (by default) to start the IM UI of **iAgents**. Invite your friend to register on the website, add them, and chat with them! **Add @ before your message** and see what happens!
+
 ## 🗺️ Roadmap
 - **iAgents** aims to explore a new Multi-Agent paradigm, where the value of agents is attributed to their human user's information, enhancing collaborative efficiency between humans and agents in coexistent societies. Currently, iAgents is in the academic prototype stage. **⚠️ Please do not use it in production environments.** We will continuously improve the functionality of **iAgents**. Below is our current roadmap, ordered from short-term to long-term goals:
 
-   - [ ] Dockerfile
+   - [x] Dockerfile
    - [ ] Support uploading files as a human user information source
    - [ ] Customizable human information access authorization
    - [ ] InfoNav visualizer
