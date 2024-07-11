@@ -7,13 +7,13 @@
 </p>
 
 ## 🎆 News
--  iAgents now supports [Ollama](https://ollama.com/)! You can use localhost LLM simply by [installing Ollama](https://ollama.com/) and set config to pick up your favorite LLM in ``config/global.yaml``, for example, a qwen2 7b model:
-```yaml
-backend:
-  provider: ollama
-  ollama_model_name: qwen2:7b
-```
--  We provide the docker build for iAgents! Please refer to <a href="#-quickstart-through-docker">🐳 Quickstart through Docker</a>
+-  2024.7.11 ✅ iAgents now supports [Ollama](https://ollama.com/)! You can use localhost LLM simply by [installing Ollama](https://ollama.com/) and set config to pick up your favorite LLM in ``config/global.yaml``, for example, a qwen2 7b model:
+      ```yaml
+      backend:
+      provider: ollama
+      ollama_model_name: qwen2:7b
+      ```
+-  2024.7.8 ✅ We provide the docker build for iAgents! Please refer to <a href="#-quickstart-through-docker">🐳 Quickstart through Docker</a>
 
 ## 📖 Overview
 
