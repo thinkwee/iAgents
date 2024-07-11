@@ -88,11 +88,13 @@
 
 5. **Start:** now you can visit the ``localhost:5001/login`` (by default) to start the IM UI of **iAgents**. Invite your friend to register on the website, add them, and chat with them! **Add @ before your message** and see what happens!
 
+
 ## 🗺️ Roadmap
 - **iAgents** aims to explore a new Multi-Agent paradigm, where the value of agents is attributed to their human user's information, enhancing collaborative efficiency between humans and agents in coexistent societies. Currently, iAgents is in the academic prototype stage. **⚠️ Please do not use it in production environments.** We will continuously improve the functionality of **iAgents**. Below is our current roadmap, ordered from short-term to long-term goals:
 
    - [x] Dockerfile
-   - [ ] Support uploading files as a human user information source
+   - [ ] Support JinaReader
+   - [ ] Support llama_index
    - [ ] Customizable human information access authorization
    - [ ] InfoNav visualizer
    - [ ] Agent Cultivate
