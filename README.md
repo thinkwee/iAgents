@@ -6,6 +6,15 @@
     【🚀 <a href="#%EF%B8%8F-quickstart">Quickstart</a> | 📚 <a href="https://arxiv.org/abs/2406.14928">Paper</a> | 📖 <a href="wiki.md">Wiki</a> | 👥 <a href="wiki.md#interact-with-preset-database">Interact with <i>Friends</i></a> | 🔬 <a href="#-more-from-our-team">More from our Team</a>】
 </p>
 
+## 🎆 News
+-  iAgents now supports [Ollama](https://ollama.com/)! You can use localhost LLM simply by [installing Ollama](https://ollama.com/) and set config to pick up your favorite LLM in ``config/global.yaml``, for example, a qwen2 7b model:
+```yaml
+backend:
+  provider: ollama
+  ollama_model_name: qwen2:7b
+```
+-  We provide the docker build for iAgents! Please refer to <a href="#-quickstart-through-docker">🐳 Quickstart through Docker</a>
+
 ## 📖 Overview
 
 - **iAgents** is a platform **designed to create a world weaved by humans and agents**, where each human has a personal **agent** that can work on their behalf to cooperate with other humans' agents. It is a new paradigm for [Large Language Model-powered Multi-Agent Systems](https://thinkwee.top/multiagent_ebook/index.html). **iAgents** proactively interact with human users to exchange information, while autonomously communicating with other agents to eliminate information asymmetry and collaborate effectively to accomplish tasks ([see our paper](https://arxiv.org/abs/2406.14928)).
@@ -93,6 +102,7 @@
 - **iAgents** aims to explore a new Multi-Agent paradigm, where the value of agents is attributed to their human user's information, enhancing collaborative efficiency between humans and agents in coexistent societies. Currently, iAgents is in the academic prototype stage. **⚠️ Please do not use it in production environments.** We will continuously improve the functionality of **iAgents**. Below is our current roadmap, ordered from short-term to long-term goals:
 
    - [x] Dockerfile
+   - [x] Support Ollama
    - [ ] Support JinaReader
    - [ ] Support llama_index
    - [ ] Customizable human information access authorization

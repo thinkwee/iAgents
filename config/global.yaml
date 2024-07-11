@@ -2,6 +2,7 @@ backend:
   provider: gpt
   google_api_key: YOUR_GOOGLE_API_KEY_HERE
   openai_api_key: YOUR_OPENAI_KEY_HERE
+  ollama_model_name: qwen2:7b
   base_url: 
 website:
   host: 0.0.0.0

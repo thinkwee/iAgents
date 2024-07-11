@@ -6,6 +6,7 @@ import yaml
 
 from backend.gemini import query_gemini
 from backend.gpt import query_claude, query_gpt, query_gpt4
+from backend.ollama import query_ollama
 from iagents.tool import FaissTool, JsonFormatTool, MindFillTool, SqlTool
 from iagents.util import iAgentsLogger
 
@@ -56,6 +57,8 @@ class Agent(ABC):
             self.query_func = query_gpt4
         elif self.backend == "claude":
             self.query_func = query_claude
+        elif self.backend == "ollama":
+            self.query_func = query_ollama
         else:
             raise ValueError("{} backend not implemented".format(backend))
         self.is_assistant = is_assistant

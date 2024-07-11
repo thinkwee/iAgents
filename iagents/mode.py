@@ -39,6 +39,8 @@ class Mode():
             self.query_func = query_gpt4
         elif self.backend == "claude":
             self.query_func = query_claude
+        elif self.backend == "ollama":
+            self.query_func = query_ollama
         else:
             raise ValueError("{} backend not implemented".format(self.backend))
 
