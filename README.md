@@ -7,6 +7,12 @@
 </p>
 
 ## 🎆 News
+-  2024.7.12 ✅ iAgents now supports [Llama Index](https://docs.llamaindex.ai/en/stable/)! You can now upload files and your agent will retrieve them automatically to communicate and solve problems! Choose your favorite Huggingface Embedding Model and use Ollama local LLM for query response (support OpenAI soon). Just set your ``config/global.yaml`` like:
+      ```yaml
+      agent:
+         use_llamaindex: True
+      ```
+   ⚠️It is still a experimental function and we are working on it. 
 -  2024.7.11 ✅ iAgents now supports [Ollama](https://ollama.com/)! You can use localhost LLM simply by [installing Ollama](https://ollama.com/) and set config to pick up your favorite LLM in ``config/global.yaml``, for example, a qwen2 7b model:
       ```yaml
       backend:
@@ -104,7 +110,7 @@
    - [x] Dockerfile
    - [x] Support Ollama
    - [ ] Support JinaReader
-   - [ ] Support llama_index
+   - [x] Support llama_index
    - [ ] Customizable human information access authorization
    - [ ] InfoNav visualizer
    - [ ] Agent Cultivate

@@ -20,7 +20,7 @@ class Mode():
 
     """
 
-    def __init__(self, sender, receiver, task, global_config, rewrite_prompt=True) -> None:
+    def __init__(self, sender, receiver, task, global_config, user_directory_root=None, rewrite_prompt=True) -> None:
         self.sender = sender
         self.receiver = receiver
         self.task = task
@@ -29,6 +29,7 @@ class Mode():
         self.mode_name = self.global_config.get("mode").get("mode")
         self.backend = self.global_config.get('backend').get('provider')
         self.rewrite_prompt = self.global_config.get('agent').get('rewrite_prompt')
+        self.user_directory_root = user_directory_root
 
         # load backend
         if self.backend == "gemini":

@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Chat</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='chat_style.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 
 <body>
@@ -22,9 +24,34 @@
 
 
                     <div class="change-avatar-buttons">
-                        <button id="change-avatar-button" class="change-avatar-button">Change User Avatar</button>
-                        <button id="change-agent-avatar-button" class="change-agent-avatar-button">Change Agent
-                            Avatar</button>
+                        <button id="change-avatar-button" class="change-avatar-button">😄 User Avatar 😄</button>
+                        <button id="change-agent-avatar-button" class="change-agent-avatar-button">🤖 Agent Avatar
+                            🤖</button>
+                        <button id="upload-file-button" class="upload-file-button">📁 User File 📁</button>
+                        <input type="file" id="file-input" style="display: none;" multiple>
+                        <!-- Button to trigger modal -->
+                        <button id="show-files-button" class="show-files-button">Show Uploaded Files</button>
+
+                        <!-- Modal -->
+                        <div id="file-modal" class="modal">
+                            <div class="modal-content">
+                                <span class="close">&times;</span>
+                                <h2>Uploaded Files</h2>
+                                <table id="file-table">
+                                    <thead>
+                                        <tr>
+                                            <th>File Name</th>
+                                            <th>Size</th>
+                                            <th>Upload Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="file-table-body">
+                                        <!-- File details will be added here dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -34,7 +61,7 @@
 
                 <div class="user-panel-container">
 
-                    <button class="agent-admin-panel-button">Agent Admin Panel</button>
+                    <button class="agent-admin-panel-button">Agent Admin Panel (TBD)</button>
                 </div>
 
                 <h3>{{ session['name'] }}'s Friends</h3>
@@ -322,6 +349,104 @@
 
 
             }
+
+            document.getElementById('upload-file-button').addEventListener('click', function () {
+                document.getElementById('file-input').click();
+            });
+
+            document.getElementById('file-input').addEventListener('change', function () {
+                uploadFiles(this.files, '/upload_file');
+            });
+
+            function uploadFiles(files, url) {
+                var formData = new FormData();
+                for (var i = 0; i < files.length; i++) {
+                    formData.append('files[]', files[i]);
+                }
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        showToast('Files uploaded successfully', true);
+                    } else {
+                        showToast('File upload failed', false);
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    showToast('File upload failed', false);
+                });
+            }
+
+            function showToast(message, success) {
+                Toastify({
+                    text: message,
+                    duration: 2000,
+                    close: true,
+                    gravity: "top",
+                    position: "center",
+                    backgroundColor: success ? "#06C05F" : "gray",
+                    stopOnFocus: true
+                }).showToast();
+            }
+
+            // Function to fetch and display uploaded files
+            document.getElementById('show-files-button').addEventListener('click', function () {
+                fetch('/get_uploaded_files')
+                    .then(response => response.json())
+                    .then(data => {
+                        populateFileTable(data);
+                        document.getElementById('file-modal').style.display = 'block';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+
+            // Close modal when close button or outside modal is clicked
+            var modal = document.getElementById('file-modal');
+            var span = document.getElementsByClassName('close')[0];
+            span.onclick = function () {
+                modal.style.display = 'none';
+            };
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            };
+
+            // Function to populate file table with data
+            function populateFileTable(files) {
+                var tableBody = document.getElementById('file-table-body');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                files.forEach(file => {
+                    var row = tableBody.insertRow();
+                    row.insertCell(0).textContent = file.name;
+                    row.insertCell(1).textContent = formatBytes(file.size);
+                    row.insertCell(2).textContent = formatDate(file.upload_date);
+                });
+            }
+
+            // Helper function to format file size
+            function formatBytes(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                var k = 1024;
+                var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                var i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // Helper function to format date with seconds precision
+            function formatDate(dateString) {
+                var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+                var date = new Date(dateString);
+                return date.toLocaleDateString('en-US', options);
+            }
+
+
+
         </script>
     </div>
 </body>

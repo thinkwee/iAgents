@@ -4,11 +4,18 @@ from datetime import datetime
 import yaml
 from flask import Flask, render_template, request, redirect, session, jsonify, send_from_directory, url_for
 from werkzeug.utils import secure_filename
+from pypinyin import lazy_pinyin
 
 from iagents.sql import *
 from iagents.mode import Mode
 from iagents.util import iAgentsLogger
+from iagents.llamaindex import LlamaIndexer
 import markdown
+
+
+import faulthandler
+faulthandler.enable()
+
 
 # Load global config with error handling
 project_path = os.path.dirname(__file__)
@@ -35,13 +42,11 @@ iAgentsLogger.set_log_path(file_timestamp=timestamp)
 logname = global_config.get('logging', {}).get('logname', 'application')
 loglevel = global_config.get('logging', {}).get('level', 'INFO').upper()
 
-logging.basicConfig(
-    filename=os.path.join(project_path, "logs", f"{logname}_{timestamp}_raw.log"),
-    level=getattr(logging, loglevel, logging.DEBUG),
-    format='[%(asctime)s %(levelname)s]\n%(message)s',
-    datefmt='%Y-%d-%m %H:%M:%S',
-    encoding="utf-8"
-)
+logging.basicConfig(filename=os.path.join(project_path, "logs", f"{logname}_{timestamp}_raw.log"),
+                    level=getattr(logging, loglevel, logging.DEBUG),
+                    format='[%(asctime)s %(levelname)s]\n%(message)s',
+                    datefmt='%Y-%d-%m %H:%M:%S',
+                    encoding="utf-8")
 
 
 def get_profile_image_url(name):
@@ -61,7 +66,6 @@ def get_profile_image_url(name):
             return url_for('static', filename=result[0][0], _external=True)
         else:
             return url_for('static', filename='default.png', _external=True)
-
 
 
 # Helper functions
@@ -165,12 +169,10 @@ def get_messages():
                 ((sender IN (%s, %s)) AND (receiver IN (%s, %s)))
                 ORDER BY timestamp
             """,
-                                params=(session['name'], session['name'] + "'s Agent",
-                                        current_chat, current_chat + "'s Agent",
-                                        current_chat, current_chat + "'s Agent",
+                                params=(session['name'], session['name'] + "'s Agent", current_chat,
+                                        current_chat + "'s Agent", current_chat, current_chat + "'s Agent",
                                         session['name'], session['name'] + "'s Agent"))
 
-        
         messages = [{
             'sender': sender,
             'receiver': receiver,
@@ -202,9 +204,10 @@ def send_message():
         communication_history = ''
     if receiver and message:
         message_html = markdown.markdown(message)
-        _ = exec_sql("INSERT INTO chats (sender, receiver, message, communication_history) VALUES (%s, %s, %s, %s)",
-                     params=(sender, receiver, message_html, communication_history),
-                     mode="write")
+        _ = exec_sql(
+            "INSERT INTO chats (sender, receiver, message, communication_history) VALUES (%s, %s, %s, %s)",
+            params=(sender, receiver, message_html, communication_history),
+            mode="write")
 
         return jsonify({'success': True}), 200
     else:
@@ -241,6 +244,59 @@ def upload_avatar():
         return redirect('/chat')
 
     return 'File upload failed', 500
+
+
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+    if 'name' not in session:
+        return redirect('/login')
+
+    if 'files[]' not in request.files:
+        return 'No file part', 400
+
+    files = request.files.getlist('files[]')
+    if not files:
+        return 'No selected file', 400
+
+    new_files = []
+
+    llama_indexer = LlamaIndexer(session['name'])
+    user_directory = os.path.join(app.root_path, 'userfiles', session['name'])
+    for file in files:
+        if file and file.filename:
+            filename = secure_filename(file.filename)
+            os.makedirs(user_directory, exist_ok=True)
+            file_path = os.path.join(user_directory, filename)
+
+            file.save(file_path)
+            new_files.append(file_path)
+
+    if new_files:
+        llama_indexer.update_index_with_new_files(new_files)
+        return 'Files uploaded successfully', 200
+
+    return 'File upload failed', 500
+
+
+def get_uploaded_files(directory_path):
+    uploaded_files = []
+    for filename in os.listdir(directory_path):
+        file_path = os.path.join(directory_path, filename)
+        if os.path.isfile(file_path):
+            file_stat = os.stat(file_path)
+            file_size = file_stat.st_size  # in bytes
+            upload_date = datetime.fromtimestamp(file_stat.st_mtime).isoformat()
+            uploaded_files.append({'name': filename, 'size': file_size, 'upload_date': upload_date})
+    return uploaded_files
+
+
+# Endpoint to fetch uploaded files
+@app.route('/get_uploaded_files', methods=['GET'])
+def fetch_uploaded_files():
+    directory_path = os.path.join(app.root_path, 'userfiles', session['name'])
+    uploaded_files = get_uploaded_files(directory_path)
+    return jsonify(uploaded_files)
+
 
 @app.route('/upload_agent_avatar', methods=['POST'])
 def upload_agent_avatar():
@@ -280,7 +336,6 @@ def upload_agent_avatar():
         return 'File upload failed', 500
 
 
-
 @app.route('/logout')
 def logout():
     session.clear()
@@ -299,14 +354,11 @@ def chat_page():
 
     friend_list = exec_sql(
         "SELECT name FROM users WHERE id IN (SELECT friend_id FROM friendships WHERE user_id=%s)",
-        params=(session['user_id'],)
-    )
+        params=(session['user_id'],))
     friend_name = request.args.get('chat')
 
-    current_user_avatar_path = exec_sql(
-        "SELECT profile_image_path FROM users WHERE name=%s",
-        params=(session['name'],)
-    )[0][0]  
+    current_user_avatar_path = exec_sql("SELECT profile_image_path FROM users WHERE name=%s",
+                                        params=(session['name'],))[0][0]
 
     return render_template('chat.html',
                            friend_list=friend_list,
@@ -329,7 +381,8 @@ def execute_agent():
     sender = session['name']  # Use session's username as sender
 
     if receiver:
-        mode = Mode(sender=sender, receiver=receiver, task=task_prompt, global_config=global_config)
+        user_directory_root = os.path.join(app.root_path, 'userfiles')
+        mode = Mode(sender=sender, receiver=receiver, task=task_prompt, global_config=global_config, user_directory_root=user_directory_root)
         communication = mode.get_communication()
         conclusion = communication.communicate()
         communication_history = "\t".join(communication.communication_history)

@@ -356,7 +356,8 @@ input[type="submit"] {
 
 
 .change-avatar-button,
-.change-agent-avatar-button {
+.change-agent-avatar-button,
+.upload-file-button {
     display: block;
     padding: 10px 10px;
     background-color: #06C05F;
@@ -370,7 +371,8 @@ input[type="submit"] {
 }
 
 .change-avatar-button:hover,
-.change-agent-avatar-button:hover {
+.change-agent-avatar-button:hover,
+.upload-file-button:hover {
     background-color: #0ba242;
 }
 
@@ -443,3 +445,57 @@ input[type="text"][name="friend_name"] {
     margin-bottom: 5px; 
     text-align: center; 
 }
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  /* Table styles */
+  #file-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  #file-table th, #file-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  #file-table th {
+    background-color: #f2f2f2;
+  }
+  

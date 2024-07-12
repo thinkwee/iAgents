@@ -9,6 +9,7 @@ from backend.gpt import query_claude, query_gpt, query_gpt4
 from backend.ollama import query_ollama
 from iagents.tool import FaissTool, JsonFormatTool, MindFillTool, SqlTool
 from iagents.util import iAgentsLogger
+from iagents.llamaindex import LlamaIndexer
 
 # load global config
 file_path = os.path.dirname(__file__)
@@ -431,11 +432,11 @@ class MemoryAgent(ThinkAgent):
         return result_str
 
     def get_other_chat_history(self, receiver, communication_history) -> str:
-        result_str = "\n\n"
+        result_str = ""
 
         # add distinct memory
         if self.enable_distinct_memory:
-            result_str += "\n\n"
+            result_str += "<distinct memory starts>\n"
             response_json_format = {"keyword": "ring/alice/steal", "window": 3, "limit": 10}
             system_prompt = "\n".join([
                 "\n".join(self.system_prompt['role']).format(master=self.master, contact=receiver),
@@ -461,6 +462,7 @@ class MemoryAgent(ThinkAgent):
             # TODO: Total Max Limit
             for message in distinct_memories[:30]:
                 result_str += f"from {message[2]} to {message[3]}: {message[4]}\n"
+            result_str += "<distinct memory ends>\n"
             self.previous_sql_result = result_str
             self.previous_sql_params = str(response_json)
             iAgentsLogger.log(
@@ -468,6 +470,7 @@ class MemoryAgent(ThinkAgent):
 
         # add fuzzy memory
         if self.enable_fuzzy_memory:
+            result_str += "<fuzzy memory starts>\n"
             response_json_format = {"query": "{}".format(self.task), "topk": 3}
             system_prompt = "\n".join([
                 "\n".join(self.system_prompt['role']).format(master=self.master, contact=receiver),
@@ -486,8 +489,18 @@ class MemoryAgent(ThinkAgent):
             topk = response_json['topk']
             ret_dis, ret_indices, ret_text = self.faiss_tool.query(query, topk)
             result_str += "\n\n{}".format("\n".join(ret_text))
+            result_str += "<fuzzy memory ends>\n"
             iAgentsLogger.log(instruction="[Fuzzy Memory Retrieved results of {}:] \n{}".format(self.master, "\n".join(ret_text)))
             self.previous_faiss_params = str(response_json)
             self.previous_faiss_result = "\n".join(ret_text)
+        
+        # add llamaindex for memory
+        if global_config.get("agent").get("use_llamaindex"):
+            llamaindexer = LlamaIndexer(self.master)
+            response = llamaindexer.query(self.task)
+            result_str += "<information from file starts>\n"
+            result_str += "\n{}".format(response)
+            result_str += "<information from file ends>\n"
+            iAgentsLogger.log(instruction="[Llama Index Memory Retrieved results of {}:] \n{}".format(self.master, response))
 
         return result_str

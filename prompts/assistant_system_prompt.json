@@ -15,9 +15,13 @@
     "chat_history": [
         "Here is some information you found may be beneficial to solving the task:",
         "{master}'s chat history with {contact}:",
+        "<chat_history start>",
         "{current_chat_history}",
-        "other information that is helpful to the task from {master}:",
-        "{other_chat_history}"
+        "<chat_history end>",
+        "other critical information from {master}'s memory that is helpful solve the task:",
+        "<memory information start>",
+        "{other_chat_history}",
+        "<memory information end>"
     ],
     "agent_chat_history": [
         "This is the progress of the discussion between you and {contact}'s Agent so far on this task",
@@ -26,8 +30,10 @@
         "now continue the chat and REMEMBER, your communication should never involve {master} to finish the task."
     ],
     "return_format": [
-        "You need to 1) first DIRECTLY and actively provide information to answer the other agent's question.",
-        "and 2) ask questions for getting the information you need.",
+        "You need to ",
+        "1) answer the task if you can",
+        "2) DIRECTLY and actively provide information to answer the other agent's question.",
+        "3) ask questions for getting the information you need.",
         "You should only share information you know.",
         "Think step by step and take a breath.",
         "RETURN ONLY your full and natural response utterance."

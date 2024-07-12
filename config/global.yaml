@@ -1,12 +1,12 @@
 backend:
-  provider: gpt
+  provider: ollama
   google_api_key: YOUR_GOOGLE_API_KEY_HERE
   openai_api_key: YOUR_OPENAI_KEY_HERE
-  ollama_model_name: qwen2:7b
+  ollama_model_name: qwen2:1.5b
   base_url: 
 website:
   host: 0.0.0.0
-  port: 5000
+  port: 5050
   flask_secret: iAgents
 mysql:
   host: localhost
@@ -18,8 +18,9 @@ logging:
   logname: test
 agent:
   max_query_retry_times: 1
-  max_communication_turns: 1
+  max_communication_turns: 10
   max_tool_retry_times: 1
-  rewrite_prompt: True
+  rewrite_prompt: False
+  use_llamaindex: True
 mode:
   mode: Base
