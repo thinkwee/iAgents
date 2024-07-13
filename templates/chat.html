@@ -25,14 +25,23 @@
 
                     <div class="change-avatar-buttons">
                         <button id="change-avatar-button" class="change-avatar-button">😄 User Avatar 😄</button>
-                        <button id="change-agent-avatar-button" class="change-agent-avatar-button">🤖 Agent Avatar
-                            🤖</button>
-                        <button id="upload-file-button" class="upload-file-button">📁 User File 📁</button>
-                        <input type="file" id="file-input" style="display: none;" multiple>
-                        <!-- Button to trigger modal -->
-                        <button id="show-files-button" class="show-files-button">Show Uploaded Files</button>
-
-                        <!-- Modal -->
+                        <button id="change-agent-avatar-button" class="change-agent-avatar-button">🤖 Agent Avatar 🤖</button>
+                        <button class="composite-button">
+                            <div class="icon-container">
+                                <span id="upload-file-button" class="icon">📁</span>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="icon-container">
+                                <span id="show-files-button" class="icon">🔍</span>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="icon-container">
+                                <span id="delete-files-button" class="icon">❌</span>
+                            </div>
+                            <input type="file" id="file-input" multiple>
+                        </button>
+                        
+                        
                         <div id="file-modal" class="modal">
                             <div class="modal-content">
                                 <span class="close">&times;</span>
@@ -60,7 +69,6 @@
                 <input type="file" id="agent-avatar-file-input" style="display: none;" accept="image/*">
 
                 <div class="user-panel-container">
-
                     <button class="agent-admin-panel-button">Agent Admin Panel (TBD)</button>
                 </div>
 
@@ -443,6 +451,33 @@
                 var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
                 var date = new Date(dateString);
                 return date.toLocaleDateString('en-US', options);
+            }
+
+            document.getElementById('delete-files-button').addEventListener('click', function () {
+                if (confirm('Are you sure you want to delete all files? This action cannot be undone.')) {
+                    deleteAllFiles();
+                }
+            });
+
+            function deleteAllFiles() {
+                fetch('/delete_all_files', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            showToast(data.message);
+                        } else if (data.error) {
+                            showToast(data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('An error occurred while deleting files.');
+                    });
             }
 
 

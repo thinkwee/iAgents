@@ -11,7 +11,7 @@ from iagents.mode import Mode
 from iagents.util import iAgentsLogger
 from iagents.llamaindex import LlamaIndexer
 import markdown
-
+import shutil
 
 import faulthandler
 faulthandler.enable()
@@ -276,6 +276,18 @@ def upload_file():
         return 'Files uploaded successfully', 200
 
     return 'File upload failed', 500
+
+@app.route('/delete_all_files', methods=['POST'])
+def delete_all_files():
+    user_directory = os.path.join(app.root_path, 'userfiles', session['name'])
+    try:
+        # Delete files
+        shutil.rmtree(user_directory)  # Delete files recursively
+        os.makedirs(user_directory, exist_ok=True)  # Recreate directory
+        
+        return jsonify({'message': 'All files from {} are deleted successfully.'.format(session['name'])}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 def get_uploaded_files(directory_path):

@@ -7,11 +7,18 @@
 </p>
 
 ## 🎆 News
--  2024.7.12 ✅ iAgents now supports [Llama Index](https://docs.llamaindex.ai/en/stable/)! You can now upload files and your agent will retrieve them automatically to communicate and solve problems! Choose your favorite Huggingface Embedding Model and use Ollama local LLM for query response (support OpenAI soon). Just set your ``config/global.yaml`` like:
+-  2024.7.13 ✅ iAgents now supports [Llama Index](https://docs.llamaindex.ai/en/stable/)! You can now upload files and your agent will retrieve them automatically to communicate and solve problems! Choose your favorite Huggingface Embedding Model and use Ollama local LLM for query response (support OpenAI soon). Just set your ``config/global.yaml`` like:
       ```yaml
       agent:
          use_llamaindex: True
       ```
+      <p align="center">
+         <img src='./static/rag.png' width=200>
+      </p>
+      You can 📃upload📃、🔍show🔍 and ❌delete❌ your personal files provided to your agent. For example, ross here upload a file about emnlp papers, now your agent can ask ross's agent about the information of survey papers in emnlp (even though ross is a palaeontologist).
+      <p align="center">
+         <img src='./static/rag2.png' width=400>
+      </p> 
    ⚠️It is still a experimental function and we are working on it. 
 -  2024.7.11 ✅ iAgents now supports [Ollama](https://ollama.com/)! You can use localhost LLM simply by [installing Ollama](https://ollama.com/) and set config to pick up your favorite LLM in ``config/global.yaml``, for example, a qwen2 7b model:
       ```yaml

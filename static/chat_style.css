@@ -5,7 +5,8 @@ body {
     background-color: #f7f7f7;
 }
 
-h1, h2 {
+h1,
+h2 {
     text-align: center;
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
@@ -16,36 +17,36 @@ h1, h2 {
     max-width: 2000px;
     margin: auto;
     padding: 20px;
-    height: calc(100vh - 40px); 
+    height: calc(100vh - 40px);
     align-items: flex-start;
 }
 
 .friend-list {
-    flex-shrink: 0; 
+    flex-shrink: 0;
     width: 300px;
     margin-right: 20px;
     display: flex;
     flex-direction: column;
-    height: 100%; 
+    height: 100%;
 }
 
 .friend-list .container {
     display: flex;
     flex-direction: column;
     height: 100%;
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 .friend-list ul {
     list-style-type: none;
     padding: 0;
-    margin: 10px 10px 0px 10px; 
-    flex-grow: 1; 
-    overflow-y: auto; 
-    border: 1px solid #dcdcdc; 
-    border-radius: 5px; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
-    background-color: #fff; 
+    margin: 10px 10px 0px 10px;
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1px solid #dcdcdc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
 }
 
 .friend-list li {
@@ -98,7 +99,7 @@ h1, h2 {
 }
 
 .chat-history-container {
-    flex-grow: 1; 
+    flex-grow: 1;
     margin-bottom: 20px;
     border: 1px solid #fff;
     padding: 20px;
@@ -107,13 +108,13 @@ h1, h2 {
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    height: 100%; 
-    overflow: hidden; 
+    height: 100%;
+    overflow: hidden;
 }
 
 .chat-history {
     flex-grow: 1;
-    overflow-y: auto; 
+    overflow-y: auto;
     border: 1px solid #fff;
     padding: 20px;
     background-color: #f2f2f2;
@@ -149,7 +150,7 @@ h1, h2 {
 #message-list {
     display: flex;
     flex-direction: column;
-    list-style-type: none; 
+    list-style-type: none;
 }
 
 .chat-message.left {
@@ -183,7 +184,7 @@ h1, h2 {
     display: flex;
     flex-direction: column;
 
-    margin-right: 5px; 
+    margin-right: 5px;
 }
 
 .sender-info.left {
@@ -238,7 +239,7 @@ h1, h2 {
 
 .feedback_bubble_sent,
 .feedback_bubble_recv {
-    max-width: 70%; 
+    max-width: 70%;
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 15px;
@@ -256,39 +257,39 @@ h1, h2 {
     align-items: center;
     margin-top: 20px;
     padding: 10px;
-    border-top: 1px solid #dcdcdc; 
+    border-top: 1px solid #dcdcdc;
 }
 
 textarea[name="message"] {
     flex-grow: 1;
-    padding: 15px; 
-    resize: none; 
+    padding: 15px;
+    resize: none;
     font-size: 14px;
-    height: 60px; 
+    height: 60px;
     border-radius: 5px;
-    border: 1px solid #dcdcdc; 
+    border: 1px solid #dcdcdc;
 }
 
 .friend-list input[type="text"] {
     padding: 10px;
-    height: 40px; 
-    box-sizing: border-box; 
+    height: 40px;
+    box-sizing: border-box;
     font-size: 16px;
-    border-radius: 5px 0 0 5px; 
-    border: 1px solid #dcdcdc; 
+    border-radius: 5px 0 0 5px;
+    border: 1px solid #dcdcdc;
 }
 
 
 .friend-list input[type="submit"] {
     padding: 10px 20px;
-    height: 40px; 
-    box-sizing: border-box; 
+    height: 40px;
+    box-sizing: border-box;
     background-color: #06C05F;
     color: #fff;
     border: none;
     cursor: pointer;
     font-size: 16px;
-    border-radius: 0 5px 5px 0; 
+    border-radius: 0 5px 5px 0;
     transition: background-color 0.3s ease;
 }
 
@@ -298,15 +299,15 @@ input[type="submit"]:hover {
 }
 
 input[type="submit"] {
-    padding: 15px 20px; 
-    margin-left: 10px; 
-    background-color: #06C05F; 
-    color: #fff; 
-    border-radius: 5px; 
-    border: none; 
-    cursor: pointer; 
-    font-size: 14px; 
-    height: 60px; 
+    padding: 15px 20px;
+    margin-left: 10px;
+    background-color: #06C05F;
+    color: #fff;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    height: 60px;
 }
 
 
@@ -335,29 +336,77 @@ input[type="submit"] {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-    padding-top: 20px; 
-    justify-content: center; 
+    padding-top: 20px;
+    justify-content: center;
 }
 
 
 .current-user-avatar .avatar {
-    width: 80px; 
+    width: 80px;
     height: 80px;
     border-radius: 50%;
-    margin-right: 20px; 
+    margin-right: 20px;
 }
 
 
 .change-avatar-buttons {
     display: flex;
-    flex-direction: column; 
-    gap: 10px; 
+    flex-direction: column;
+    gap: 10px;
+}
+
+.composite-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1px 0;
+    background-color: #06C05F;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.icon-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    height: 100%;
+}
+
+.icon-container:hover {
+    background-color: #0ba242;
+}
+
+.icon {
+    width: 100%;
+    text-align: center;
+}
+
+.divider {
+    height: 24px;
+    width: 2px;
+    background-color: #fff;
+}
+
+.composite-button input[type="file"] {
+    display: none;
 }
 
 
+
+
+
 .change-avatar-button,
-.change-agent-avatar-button,
-.upload-file-button {
+.change-agent-avatar-button {
     display: block;
     padding: 10px 10px;
     background-color: #06C05F;
@@ -367,12 +416,11 @@ input[type="submit"] {
     cursor: pointer;
     transition: background-color 0.3s ease;
     text-align: center;
-    width: 160px; 
+    width: 160px;
 }
 
 .change-avatar-button:hover,
-.change-agent-avatar-button:hover,
-.upload-file-button:hover {
+.change-agent-avatar-button:hover {
     background-color: #0ba242;
 }
 
@@ -386,7 +434,7 @@ input[type="submit"] {
 .user-panel-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; 
+    align-items: center;
 }
 
 
@@ -400,8 +448,8 @@ input[type="submit"] {
     cursor: pointer;
     transition: background-color 0.3s ease;
     text-align: center;
-    width: 200px; 
-    margin-top: 0px; 
+    width: 200px;
+    margin-top: 0px;
 }
 
 .agent-admin-panel-button:hover {
@@ -410,45 +458,46 @@ input[type="submit"] {
 
 
 input[type="submit"][value="Add"] {
-    padding: 5px 15px; 
+    padding: 5px 15px;
     font-size: 14px;
-    height: 30px; 
-    background-color: #06C05F; 
+    height: 30px;
+    background-color: #06C05F;
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease; 
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 input[type="submit"][value="Add"]:hover {
-    background-color: #0056b3; 
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); 
+    background-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 
 input[type="text"][name="friend_name"] {
-    padding: 5px 10px; 
+    padding: 5px 10px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    height: 30px; 
-    margin-right: 5px; 
+    height: 30px;
+    margin-right: 5px;
 }
 
 
 .friend-list h3 {
-    font-family: 'Courier New', Courier, monospace; 
-    font-style: italic; 
-    margin-top: 10px; 
-    margin-bottom: 5px; 
-    text-align: center; 
+    font-family: 'Courier New', Courier, monospace;
+    font-style: italic;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    text-align: center;
 }
 
 /* Modal styles */
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
     position: fixed;
     z-index: 1;
     left: 0;
@@ -456,46 +505,47 @@ input[type="text"][name="friend_name"] {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.5); /* Black background with opacity */
-  }
-  
-  .modal-content {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Black background with opacity */
+}
+
+.modal-content {
     background-color: #fefefe;
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
     max-width: 600px;
-  }
-  
-  .close {
+}
+
+.close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
-  }
-  
-  .close:hover,
-  .close:focus {
+}
+
+.close:hover,
+.close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
-  }
-  
-  /* Table styles */
-  #file-table {
+}
+
+/* Table styles */
+#file-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-  }
-  
-  #file-table th, #file-table td {
+}
+
+#file-table th,
+#file-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
-  }
-  
-  #file-table th {
+}
+
+#file-table th {
     background-color: #f2f2f2;
-  }
-  
+}

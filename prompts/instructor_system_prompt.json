@@ -19,9 +19,7 @@
         "{current_chat_history}",
         "<chat_history end>",
         "other critical information from {master}'s memory that is helpful solve the task:",
-        "<memory information start>",
-        "{other_chat_history}",
-        "<memory information end>"
+        "{other_chat_history}"
     ],
     "agent_chat_history": [
         "This is the progress of the discussion between you and {contact}'s Agent so far on this task",
