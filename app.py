@@ -12,6 +12,7 @@ from iagents.util import iAgentsLogger
 from iagents.llamaindex import LlamaIndexer
 import markdown
 import shutil
+import requests
 
 import faulthandler
 faulthandler.enable()
@@ -251,6 +252,29 @@ def upload_file():
     if 'name' not in session:
         return redirect('/login')
 
+    user_directory = os.path.join(app.root_path, 'userfiles', session['name'])
+    os.makedirs(user_directory, exist_ok=True)
+    llama_indexer = LlamaIndexer(session['name'])
+
+    if request.content_type == 'application/json':
+        data = request.get_json()
+        url = data.get('url')
+        if not url:
+            return 'No URL provided', 400
+        
+        modified_url = f"https://r.jina.ai/{url}"
+        response = requests.get(modified_url)
+        if response.status_code == 200:
+            content = response.text
+            filename = secure_filename(url.split('/')[-1] + '.txt')
+            file_path = os.path.join(user_directory, filename)
+            with open(file_path, 'w') as file:
+                file.write(content)
+            llama_indexer.update_index_with_new_files([file_path])
+            return 'URL content uploaded successfully', 200
+        else:
+            return 'Failed to fetch URL content', 500
+
     if 'files[]' not in request.files:
         return 'No file part', 400
 
@@ -260,14 +284,10 @@ def upload_file():
 
     new_files = []
 
-    llama_indexer = LlamaIndexer(session['name'])
-    user_directory = os.path.join(app.root_path, 'userfiles', session['name'])
     for file in files:
         if file and file.filename:
             filename = secure_filename(file.filename)
-            os.makedirs(user_directory, exist_ok=True)
             file_path = os.path.join(user_directory, filename)
-
             file.save(file_path)
             new_files.append(file_path)
 

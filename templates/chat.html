@@ -25,7 +25,8 @@
 
                     <div class="change-avatar-buttons">
                         <button id="change-avatar-button" class="change-avatar-button">😄 User Avatar 😄</button>
-                        <button id="change-agent-avatar-button" class="change-agent-avatar-button">🤖 Agent Avatar 🤖</button>
+                        <button id="change-agent-avatar-button" class="change-agent-avatar-button">🤖 Agent Avatar
+                            🤖</button>
                         <button class="composite-button">
                             <div class="icon-container">
                                 <span id="upload-file-button" class="icon">📁</span>
@@ -38,10 +39,24 @@
                             <div class="icon-container">
                                 <span id="delete-files-button" class="icon">❌</span>
                             </div>
-                            <input type="file" id="file-input" multiple>
+                            <input type="file" id="file-input" multiple style="display: none;">
                         </button>
-                        
-                        
+
+                        <div id="option-selection" class="option-selection" style="display: none;">
+                            <button id="select-file-upload" class="option-button">File</button>
+                            <button id="select-url-upload" class="option-button">URL</button>
+                        </div>
+
+                        <!-- Modal for URL input -->
+                        <div id="urlModal" class="modal">
+                            <div class="modal-content">
+                                <span class="close_url">&times;</span>
+                                <h2>Enter URL</h2>
+                                <input type="text" id="url-input" placeholder="Enter URL" class="modal-input">
+                                <button id="submit-url-button" class="modal-button">Submit URL</button>
+                            </div>
+                        </div>
+
                         <div id="file-modal" class="modal">
                             <div class="modal-content">
                                 <span class="close">&times;</span>
@@ -358,17 +373,65 @@
 
             }
 
-            document.getElementById('upload-file-button').addEventListener('click', function () {
-                document.getElementById('file-input').click();
+            // Elements
+            const uploadButton = document.getElementById('upload-file-button');
+            const optionSelection = document.getElementById('option-selection');
+            const fileInput = document.getElementById('file-input');
+            const selectFileUpload = document.getElementById('select-file-upload');
+            const selectUrlUpload = document.getElementById('select-url-upload');
+            const urlModal = document.getElementById('urlModal');
+            const closeModal = document.getElementsByClassName('close_url')[0];
+            const submitUrlButton = document.getElementById('submit-url-button');
+            const urlInput = document.getElementById('url-input');
+
+            // Show option selection
+            uploadButton.addEventListener('click', function () {
+                optionSelection.style.display = 'block';
             });
 
-            document.getElementById('file-input').addEventListener('change', function () {
+            // File upload option
+            selectFileUpload.addEventListener('click', function () {
+                fileInput.click();
+                optionSelection.style.display = 'none';
+            });
+
+            // URL upload option
+            selectUrlUpload.addEventListener('click', function () {
+                urlModal.style.display = 'block';
+                optionSelection.style.display = 'none';
+            });
+
+            // Close modal
+            closeModal.onclick = function () {
+                urlModal.style.display = 'none';
+            }
+
+            // Close modal when clicking outside of it
+            window.onclick = function (event) {
+                if (event.target == urlModal) {
+                    urlModal.style.display = 'none';
+                }
+            }
+
+            // Handle file input change
+            fileInput.addEventListener('change', function () {
                 uploadFiles(this.files, '/upload_file');
             });
 
+            // Handle URL submission
+            submitUrlButton.addEventListener('click', function () {
+                const url = urlInput.value;
+                if (url) {
+                    uploadURL(url, '/upload_file');
+                    urlModal.style.display = 'none';
+                } else {
+                    showToast('URL is required', false);
+                }
+            });
+
             function uploadFiles(files, url) {
-                var formData = new FormData();
-                for (var i = 0; i < files.length; i++) {
+                const formData = new FormData();
+                for (let i = 0; i < files.length; i++) {
                     formData.append('files[]', files[i]);
                 }
 
@@ -386,6 +449,26 @@
                     showToast('File upload failed', false);
                 });
             }
+
+            function uploadURL(url, targetUrl) {
+                fetch(targetUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: url })
+                }).then(response => {
+                    if (response.ok) {
+                        showToast('URL content uploaded successfully', true);
+                    } else {
+                        showToast('URL content upload failed', false);
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    showToast('URL content upload failed', false);
+                });
+            }
+
 
             function showToast(message, success) {
                 Toastify({

@@ -7,7 +7,11 @@
 </p>
 
 ## 🎆 News
--  2024.7.13 ✅ iAgents now supports [Llama Index](https://docs.llamaindex.ai/en/stable/)! You can now upload files and your agent will retrieve them automatically to communicate and solve problems! Choose your favorite Huggingface Embedding Model and use Ollama local LLM for query response (support OpenAI soon). Just set your ``config/global.yaml`` like:
+-  2024.7.13 ✅ iAgents now supports [Jina Reader](https://jina.ai/reader)! You can now upload files or just input a url, and jina reader will transform the webpage into a LLM-friendly text file and save it as your file!
+      <p align="center">
+         <img src='./static/jina.png' width=200>
+      </p>
+-  2024.7.12 ✅ iAgents now supports [Llama Index](https://docs.llamaindex.ai/en/stable/)! You can now upload files and your agent will retrieve them automatically to communicate and solve problems! Choose your favorite Huggingface Embedding Model and use Ollama local LLM for query response (support OpenAI soon). Just set your ``config/global.yaml`` like:
       ```yaml
       agent:
          use_llamaindex: True
