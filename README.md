@@ -7,7 +7,7 @@
 </p>
 
 ## 🎆 News
--  2024.7.13 ✅ iAgents now supports [Jina Reader](https://jina.ai/reader)! You can now upload files or just input a url, and jina reader will transform the webpage into a LLM-friendly text file and save it as your file!
+-  2024.7.13 ✅ iAgents now supports [Jina Reader](https://jina.ai/reader)! You can now upload files or just input a url, and jina reader will transform the webpage into a LLM-friendly text and upload it as your file!
       <p align="center">
          <img src='./static/jina.png' width=200>
       </p>
@@ -120,7 +120,7 @@
 
    - [x] Dockerfile
    - [x] Support Ollama
-   - [ ] Support JinaReader
+   - [x] Support JinaReader
    - [x] Support llama_index
    - [ ] Customizable human information access authorization
    - [ ] InfoNav visualizer
