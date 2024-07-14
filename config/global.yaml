@@ -10,8 +10,8 @@ website:
   flask_secret: iAgents
 mysql:
   host: localhost
-  username: YOUR_MYSQL_USERNAME_HERE
-  password: YOUR_MYSQL_PASSWORD_HERE
+  username: root
+  password: 719237968887
   database: test
 logging:
   level: INFO
