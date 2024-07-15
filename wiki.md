@@ -14,6 +14,45 @@
 - When you add '@' in front of your message, it will be turned into a task prompt to agents, and agents from both sides will be summoned and start autonomous communication for solving this task. They will cooperate by seeking from the information you provided (which by default is your chat history).
 ![wiki4](static/wiki4.png)
 
+## Use Local LLM with Ollama
+- Follow the instructions on [Ollama](https://ollama.com/) to install and start Ollama. We recommend first try Ollama in shell with your favorite opensource LLM to test if your device support a local LLM, for example, run 
+  ```bash
+  ollama run qwen2:7b
+  ```
+  It will download the modelfile of qwen2 7b and start an interactive shell for chatting.
+- Run iAgents with Ollama does not need the interactive shell activated but only leave the Ollama running in background. Then change your ``config/global.yaml`` with your tested and downloaded local LLM:
+  ```yaml
+  backend:
+      provider: ollama
+      ollama_model_name: qwen2:7b
+  ```
+  Then you can start iAgents and run all agents with this local LLM.
+
+## RAG
+- iAgents allows human user provide files and information to their agent for personalized automatic communication and cooperation. Vanilla iAgents has supported to use chatting history as human information. With RAG ability of iAgents, you can upload any file and even website to enrich your personal information.
+- iAgents uses [Llama Index](https://docs.llamaindex.ai/en/stable/) to achieve RAG. The dependency has been recorded in ``requirements.txt`` so all you have to do is to install iAgents as usual.
+- In the chatting UI you will see the RAG toolbar like:
+
+  <p align="center">
+    <img src='./static/ragtool.png' width=200>
+  </p>
+
+  where 📃 for uploading files, 🔍 for showing all files uploaded, ❌ for deleting all files. When uploading files, you can also choose to input a url instead, and iAgents will use [Jina Reader](https://jina.ai/reader) to parse this website into a LLM-friendly text and save it as your file:
+
+  <p align="center">
+    <img src='./static/url.png' width=400>
+  </p>  
+  
+- You can always upload file but only when option in ``config/global.yaml`` is the set to True then your agent will try to read your file:
+  ```yaml
+  agent:
+      use_llamaindex: True
+  ``` 
+- The whole process of RAG is like
+  - upload a file (or parse a file from url)
+  - chunk this file and embed this file with Llama Index, using ``BAAI/bge-small-en-v1.5`` for the embedding model by default
+  - Then everytime when your agent start planning, it will try to query your embeded files and get a response from your Ollama local LLM. Then the response will serve as the context for the agent to make decision in each utterance.
+
 ## Configuration
 
 - Here we list all the details in the configuration file `config/global.yaml`:
@@ -75,7 +114,9 @@ mode:
 ![wiki5](static/wiki5.png)
 
 ## Framework
-![wiki6](static/wiki6.png)
+<p align="center">
+  <img src='./static/wiki6.png' width=800>
+</p>
 - Above is the overall system architecture of **iAgents**.
 - The main code of **iAgents** is under the `iagents/` path, where:
   - agent.py: defines the agent class. It orchestrates what agents can observe, how to assemble the system prompts for agents, and send the query to LLM backends.
