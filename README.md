@@ -7,7 +7,7 @@
 </p>
 
 ## 🎆 News
--  2024.7.23 ✅ iAgents now supports **Agent Cultivate**! You can now cultivate your agent by clicking on the Agent Admin Panel button and talking with it and use your human feedback data to automatically optimize it. The agent profile will be improved during the cultivation.
+-  2024.7.23 ✅ iAgents now supports **Agent Cultivate**! You can now cultivate your agent by clicking on the Agent Admin Panel button and talking with your Agent. You can also use your human feedback data to automatically optimize it. The agent profile will be improved during the cultivation.
       <p align="center">
          <img src='./static/agent_cultivate_example.png' width=800>
       </p>
