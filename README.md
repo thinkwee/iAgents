@@ -9,9 +9,6 @@
 ## 🎆 News
 -  2024.7.23 ✅ iAgents now supports **Agent Cultivate**! You can now cultivate your agent by talking with it and use your human feedback data to automatically optimize it. The agent profile will be improved during the cultivation.
       <p align="center">
-         <img src='./static/agent_cultivate_icon.png' width=300>
-      </p>
-      <p align="center">
          <img src='./static/agent_cultivate_example.png' width=800>
       </p>
 
