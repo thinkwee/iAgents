@@ -121,6 +121,7 @@ class Agent(ABC):
         """
         current_chat_history = self.get_current_chat_history(receiver, communication_history)
         other_chat_history = self.get_other_chat_history(receiver, communication_history)
+        agent_profile_prompt = self.sql_tool.get_agent_profile_prompt(self.master)
 
         # the prompt is assembled in the order of
         # 1. define the role
@@ -129,6 +130,7 @@ class Agent(ABC):
         # 4. give the current progress of agents' communication
         # 5. define the return format
         system_prompt = "\n".join([
+            agent_profile_prompt, 
             "\n".join(self.system_prompt['role']).format(master=self.master, 
                                                          contact=receiver),
             "\n".join(self.system_prompt['chat_history']).format(master=self.master,
@@ -284,7 +286,9 @@ class ThinkAgent(VanillaAgent):
 
     def assemble_prompt(self, receiver, communication_history, current_chat_history, other_chat_history) -> str:
         # add the infonav plan to the query prompt
+        agent_profile_prompt = self.sql_tool.get_agent_profile_prompt(self.master)
         system_prompt = "\n".join([
+            agent_profile_prompt,
             "\n".join(self.system_prompt['role']).format(master=self.master, 
                                                          contact=receiver),
             "\n".join(self.system_prompt['chat_history']).format(master=self.master,

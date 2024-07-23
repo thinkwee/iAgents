@@ -84,8 +84,10 @@
                 <input type="file" id="agent-avatar-file-input" style="display: none;" accept="image/*">
 
                 <div class="user-panel-container">
-                    <button class="agent-admin-panel-button">Agent Admin Panel (TBD)</button>
+                    <button id="agent-admin-panel-button" class="agent-admin-panel-button">Agent Admin Panel</button>
                 </div>
+
+
 
                 <h3>{{ session['name'] }}'s Friends</h3>
                 <form method="post" action="/add_friend">
@@ -210,13 +212,13 @@
                                     const likeButton = document.createElement('button');
                                     likeButton.textContent = '👍';
                                     likeButton.addEventListener('click', function () {
-                                        sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, 'like');
+                                        sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, 'good');
                                     });
 
                                     const dislikeButton = document.createElement('button');
                                     dislikeButton.textContent = '👎';
                                     dislikeButton.addEventListener('click', function () {
-                                        sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, 'dislike');
+                                        sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, 'bad');
                                     });
 
                                     feedbackDiv.appendChild(likeButton);
@@ -288,7 +290,34 @@
                     return;
                 }
 
-                if (message.startsWith('@')) {
+                if (sender + "'s Agent" == receiver) {
+                    const origData = new FormData(document.getElementById('message-form'));
+                    document.getElementById('loading-indicator').style.display = 'block';
+                    fetch('/execute_agent_cultivate?receiver=' + receiver + '&message=' + message + '&sender=' + sender)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to execute agent');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+
+                            origData.set('message', message);
+                            origData.set('sender', sender);
+                            origData.set('receiver', receiver);
+                            origData.set('communication_history', 'None');
+                            sendMessageNow(origData);
+
+                            formData.set('message', data.agent_response);
+                            formData.set('sender', sender + "'s Agent");
+                            formData.set('communication_history', data.communication_history);
+                            formData.set('receiver', sender);
+
+                            sendMessageNow(formData);
+                        })
+                        .catch(error => console.error('Error executing agent:', error));
+                }
+                else if (message.startsWith('@')) {
                     document.getElementById('loading-indicator').style.display = 'block';
                     fetch('/execute_agent?receiver=' + receiver + '&message=' + message + '&sender=' + sender)
                         .then(response => {
@@ -298,7 +327,7 @@
                             return response.json();
                         })
                         .then(data => {
-                            formData.set('message', "[Conclusion on Agents' Communication ]: " + data.agent_response);
+                            formData.set('message', "[Conclusion on Agents' Communication ]: \n" + data.agent_response);
                             formData.set('sender', sender + "'s Agent");
                             formData.set('communication_history', data.communication_history);
 
@@ -562,6 +591,85 @@
                         showToast('An error occurred while deleting files.');
                     });
             }
+
+            document.getElementById('agent-admin-panel-button').addEventListener('click', function () {
+                openAgentChat();
+            });
+
+            function openAgentChat() {
+                const receiver = "{{ session['name'] }}'s Agent";
+                document.getElementById('receiver').value = receiver;
+                fetchMessagesAgentCultivate();
+            }
+
+            function fetchMessagesAgentCultivate() {
+                const currentChat = document.getElementById('receiver').value;
+                if (currentChat) {
+                    fetch(`/get_messages?chat=${currentChat}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to fetch messages');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            const messageList = document.getElementById('message-list');
+                            messageList.innerHTML = '';
+                            data.messages.forEach(message => {
+                                const li = document.createElement('li');
+                                li.classList.add('message-item');
+
+                                let bubbleClass = 'received_bubble';
+                                let alignClass = 'left';
+                                if (message.sender === '{{ session["name"] }}') {
+                                    bubbleClass = 'sent_bubble';
+                                    alignClass = 'right';
+                                } else if (message.sender === '{{ session["name"] }}\'s Agent') {
+                                    bubbleClass = 'agent_sent_bubble';
+                                    alignClass = 'right';
+                                }
+
+                                const messageContainer = document.createElement('div');
+                                messageContainer.className = `chat-message ${alignClass}`;
+
+                                const senderInfo = document.createElement('div');
+                                senderInfo.className = `sender-info ${alignClass}`;
+
+                                const senderAvatar = document.createElement('img');
+                                senderAvatar.src = message.sender_profile_image_url;
+                                senderAvatar.alt = `${message.sender}'s avatar`;
+                                senderAvatar.classList.add('avatar');
+
+                                const senderName = document.createElement('div');
+                                senderName.classList.add('sender-name');
+                                senderName.textContent = message.sender;
+
+                                senderInfo.appendChild(senderAvatar);
+                                senderInfo.appendChild(senderName);
+
+                                const messageContent = document.createElement('div');
+                                messageContent.innerHTML = `<span>${message.message}</span>`;
+                                messageContent.classList.add('message-content');
+                                messageContent.classList.add(bubbleClass);
+
+                                if (alignClass === 'left') {
+                                    messageContainer.appendChild(senderInfo);
+                                    messageContainer.appendChild(messageContent);
+                                } else {
+                                    messageContainer.appendChild(messageContent);
+                                    messageContainer.appendChild(senderInfo);
+                                }
+
+                                li.appendChild(messageContainer);
+                                messageList.appendChild(li);
+                            });
+
+                            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+                        })
+                        .catch(error => console.error('Error fetching messages:', error));
+                }
+            }
+
 
 
 

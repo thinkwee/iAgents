@@ -65,6 +65,7 @@ def create_users_table(cursor):
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
+                system_prompt TEXT NOT NULL,
                 profile_image_path VARCHAR(255) DEFAULT 'default.png',
                 agent_profile_image_path VARCHAR(255) DEFAULT 'default_agent.png'
             )

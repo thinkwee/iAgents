@@ -7,15 +7,30 @@
 </p>
 
 ## 🎆 News
--  2024.7.13 ✅ iAgents now supports [Jina Reader](https://jina.ai/reader)! You can now upload files or just input a url, and jina reader will transform the webpage into a LLM-friendly text and upload it as your file!
+-  2024.7.23 ✅ iAgents now supports **Agent Cultivate**! You can now cultivate your agent by talking with it and use your human feedback data to automatically optimize it. The agent profile will be improved during the cultivation.
+      <p align="center">
+         <img src='./static/agent_cultivate_icon.png' width=300>
+      </p>
+      <p align="center">
+         <img src='./static/agent_cultivate_example.png' width=800>
+      </p>
+
+<details>
+<summary>2024.7.13 ✅ iAgents now supports Jina Reader! </summary>
+
+*  2024.7.13 ✅ iAgents now supports [Jina Reader](https://jina.ai/reader)! You can now upload files or just input a url, and jina reader will transform the webpage into a LLM-friendly text and upload it as your file!
       <p align="center">
          <img src='./static/withjina.png' width=800>
       </p>
       <p align="center">
          <img src='./static/rag_cover.png' width=800>
       </p>
----
--  2024.7.12 ✅ iAgents now supports [Llama Index](https://docs.llamaindex.ai/en/stable/)! You can now upload files and your agent will retrieve them automatically to communicate and solve problems! Choose your favorite Huggingface Embedding Model and use Ollama local LLM for query response (support OpenAI soon). Just set your ``config/global.yaml`` like:
+</details>
+
+<details>
+<summary> 2024.7.12 ✅ iAgents now supports Llama Index!</summary>
+
+*  2024.7.12 ✅ iAgents now supports [Llama Index](https://docs.llamaindex.ai/en/stable/)! You can now upload files and your agent will retrieve them automatically to communicate and solve problems! Choose your favorite Huggingface Embedding Model and use Ollama local LLM for query response (support OpenAI soon). Just set your ``config/global.yaml`` like:
       <p align="center">
          <img src='./static/withllamaindex.png' width=800>
       </p>
@@ -29,8 +44,12 @@
       ```
 
       You can 📃upload、🔍show and ❌delete your personal files provided to your agent. For example, ross here upload a file about emnlp papers, now your agent can ask ross's agent about the information of survey papers in emnlp (even though ross is a palaeontologist). ⚠️It is still a experimental function and we are working on it. See <a href="wiki.md#rag">guide here</a>.
----
--  2024.7.11 ✅ iAgents now supports [Ollama](https://ollama.com/)! You can use localhost LLM simply by [installing Ollama](https://ollama.com/) and set config to pick up your favorite LLM in ``config/global.yaml``, for example, a qwen2 7b model:
+</details>
+
+<details>
+<summary> 2024.7.11 ✅ iAgents now supports Ollama!</summary>
+
+*  2024.7.11 ✅ iAgents now supports [Ollama](https://ollama.com/)! You can use localhost LLM simply by [installing Ollama](https://ollama.com/) and set config to pick up your favorite LLM in ``config/global.yaml``, for example, a qwen2 7b model:
       <p align="center">
          <img src='./static/withollama.png' width=800>
       </p>
@@ -41,8 +60,13 @@
          ollama_model_name: qwen2:7b
       ```
       See <a href="wiki.md#use-local-llm-with-ollama">guide here</a>.
----
--  2024.7.8 ✅ We provide the docker build for iAgents! Please refer to <a href="#-quickstart-through-docker">🐳 Quickstart through Docker</a>
+</details>
+
+<details>
+<summary> 2024.7.8 ✅ iAgents now supports Docker!</summary>
+
+*  2024.7.8 ✅ We provide the docker build for iAgents! Please refer to <a href="#-quickstart-through-docker">🐳 Quickstart through Docker</a>
+</details>
 
 ## 📖 Overview
 
@@ -134,9 +158,10 @@
    - [x] Support Ollama
    - [x] Support JinaReader
    - [x] Support llama_index
+   - [x] Agent Cultivate
    - [ ] Customizable human information access authorization
    - [ ] InfoNav visualizer
-   - [ ] Agent Cultivate
+   - [ ] Agent action status bar
    - [ ] Add more preset databases for experience
    - [ ] Fuzzy memory
    - [ ] Enable agents to proactively initiate new communication

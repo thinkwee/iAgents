@@ -228,6 +228,23 @@ class SqlTool(Tool):
         sql_execute_results = self.execute_sql(sql_command, params)
         return sql_execute_results
 
+    def get_agent_profile_prompt(self, master):
+        sql_command = """
+            SELECT system_prompt
+            FROM users 
+            WHERE 
+                name = %s
+        """
+        params = (master,)
+        sql_execute_results = self.execute_sql(sql_command, params) 
+        if len(sql_execute_results) == 0:
+            return ""
+        else:
+            if not sql_execute_results[0][0]:
+                return ""
+            else:
+                return sql_execute_results[0][0].strip('"')
+    
     def execute_sql(self, sql_command, params=None):
         full_sql_command = "SQL COMMAND:\n{}\nPARAMS:\n{}\n".format(str(sql_command), str(params))
         sql_results = exec_sql(sql_command=sql_command, params=params)

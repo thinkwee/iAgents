@@ -18,7 +18,7 @@ logging:
   logname: test
 agent:
   max_query_retry_times: 1
-  max_communication_turns: 10
+  max_communication_turns: 3
   max_tool_retry_times: 1
   rewrite_prompt: False
   use_llamaindex: True

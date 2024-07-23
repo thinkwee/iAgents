@@ -424,6 +424,73 @@ def execute_agent():
     else:
         return jsonify({'error': 'No chat receiver specified'}), 400
 
+@app.route('/execute_agent_cultivate')
+def execute_agent_cultivate():
+    if 'name' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    receiver = request.args.get('receiver')
+    cultivate_prompt = request.args.get('message')
+    sender = session['name'] 
+    user_directory_root = os.path.join(app.root_path, 'userfiles')
+    mode = Mode(sender=sender, receiver=receiver, task=cultivate_prompt, global_config=global_config, user_directory_root=user_directory_root)
+
+    chat_history = exec_sql("""
+        SELECT message 
+        FROM chats 
+        WHERE 
+        (sender = %s AND receiver = %s)
+        ORDER BY timestamp
+        LIMIT 30
+    """,
+    params=(session['name'], session['name'] + "'s Agent"))
+
+    messages = ["{}. {}".format(str(idx), message[0]) for idx, message in enumerate(chat_history)]
+    message = "\n".join(messages)
+
+    if cultivate_prompt == "@":
+        chat_history = exec_sql("""
+            SELECT feedback, communication_history, conclusion 
+            FROM feedback 
+            WHERE 
+            (sender = %s OR receiver = %s)
+            ORDER BY timestamp
+            LIMIT 30
+        """,
+        params=(session['name'] + "'s Agent", session['name'] + "'s Agent"))
+
+        feedback_messages = ["{}. This is a {} feedback on agents' communication. The communication history is {}. The conclusion is {}".format(str(idx), message[0], message[1], message[2]) for idx, message in enumerate(chat_history)]
+        feedback_message = "\n".join(feedback_messages)
+        improved_system_prompt = mode.query_func(
+"""
+Now you need to optimize and generate a concise a agent profile prompt based on the requirements of "{}",
+The previous requirements are shown below, do not forget to satisfy previous requirements when optimizing the profile prompt:
+{}
+Here are some feedback from human on your agent's previous cooperation and communication with other agents, which can be used to improve profile prompt:
+{}
+the improved agent profile prompt should begin with 'As the personal agent of {}, you should ... '
+Now focus on the requirements of "{}" and previous requirements, you must return only the improved profile prompt
+""".format(cultivate_prompt, message, feedback_message, sender, cultivate_prompt))
+    else:
+        improved_system_prompt = mode.query_func(
+"""
+Now you need to optimize and generate a concise a agent profile prompt based on the requirements of "{}",
+The previous requirements are shown below, do not forget to satisfy previous requirements when optimizing the profile prompt:
+{}
+the improved agent profile prompt should begin with 'As the personal agent of {}, you should ... '
+Now focus on the requirements of "{}" and previous requirements, you must return only the improved profile prompt
+""".format(cultivate_prompt, message, sender, cultivate_prompt))
+
+    exec_sql("UPDATE users SET system_prompt=%s WHERE name=%s",
+              params=(improved_system_prompt, session['name']),
+              mode="write")
+
+    agent_response = "Ok, now your agent profile prompt is:\n<--------------->\n **{}** \n<----------------->\n1. Feel free to customize more on your agent by keep talking in this chat.\n2. Input @ to automatically optimize your agent profile prompt using the feedback data".format(improved_system_prompt)
+
+    if receiver:
+        return jsonify({'agent_response': agent_response, 'communication_history': "None"}), 200
+    else:
+        return jsonify({'error': 'No chat receiver specified'}), 400
 
 if __name__ == '__main__':
     HOST = global_config.get("website", {}).get("host", "0.0.0.0")

@@ -503,7 +503,7 @@ input[type="text"][name="friend_name"] {
 
 
 .friend-list h3 {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-style: italic;
     margin-top: 10px;
     margin-bottom: 5px;
