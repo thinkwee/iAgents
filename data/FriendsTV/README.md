@@ -1,7 +1,7 @@
 # *FriendsTV* Dataset
 
 <p align="center">
-  <img src='./network.png' width=800>
+  <img src='./network.png' width=400>
 </p>
 
 
