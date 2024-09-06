@@ -1,6 +1,8 @@
 # *FriendsTV* Dataset
 
-![image](./network.png)
+<p align="center">
+  <img src='./network.png' width=800>
+</p>
 
 
 This repository contains the processed script data for Season 1 of the popular TV show "Friends". The data has been prepared for direct import into the **iAgents** database.

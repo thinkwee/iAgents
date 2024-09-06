@@ -1,6 +1,8 @@
 # iAgents *Schedule Dataset* Pipeline
 
-![image](./SchedulePipeline.png)
+<p align="center">
+  <img src='./SchedulePipeline.png' width=800>
+</p>
 
 This README outlines the process of generating the Schedule dataset, which includes creating schedules, generating dialogues, and producing datasets of varying difficulty levels.
 
