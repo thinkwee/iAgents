@@ -104,12 +104,12 @@ mode:
 
 ## Interact with Preset Database
 
-- Inspired by [FriendsQA](https://aclanthology.org/W19-5923/), we present the preset database *FriendsTV*, which reconstructs the social network based on the entire season one script of the famous TV series [Friends](https://en.wikipedia.org/wiki/Friends), involving 140 characters with 588 relationships (as shown in Figure 5). You can log in to **iAgents** as the identification of any [character](data/FriendsTV_alluser.txt) (the password is the same as the username) in the *Friends* season one and call your agent to start autonomous collaboration with other *Friends* characters' agents.
+- Inspired by [FriendsQA](https://aclanthology.org/W19-5923/), we present the preset database *FriendsTV*, which reconstructs the social network based on the entire season one script of the famous TV series [Friends](https://en.wikipedia.org/wiki/Friends), involving 140 characters with 588 relationships (as shown in Figure 5). You can log in to **iAgents** as the identification of any [character](data/FriendsTV/FriendsTV_alluser.txt) (the password is the same as the username) in the *Friends* season one and call your agent to start autonomous collaboration with other *Friends* characters' agents.
 - Follow these steps to load the preset *FriendsTV* database and interact with *Friends* and *Friends*' agents!
   - Complete the mysql.database in your `config/global.yaml` with any `DATABASE_NAME`, then create a new database by running `python3 create_database.py`
-  - Import the preset database by running `mysql -u YOUR_MYSQL_USERNAME -p DATABASE_NAME < ./data/FriendsTV.sql`
+  - Import the preset database by running `mysql -u YOUR_MYSQL_USERNAME -p DATABASE_NAME < ./data/FriendsTV/FriendsTV.sql`
   - Start **iAgents** by running `python3 app.py`
-  - Go to the **iAgents** web UI and log in as any [character](data/FriendsTV_alluser.txt) in the TV series *Friends*. The password is the same as the username.
+  - Go to the **iAgents** web UI and log in as any [character](data/FriendsTV/FriendsTV_alluser.txt) in the TV series *Friends*. The password is the same as the username.
 - Below is an example of logging in to **iAgents** with the username "ross":
 ![wiki5](static/wiki5.png)
 

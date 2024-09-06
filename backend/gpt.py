@@ -41,13 +41,14 @@ def calc_max_token(messages, model):
         "gpt-4": 8192,
         "gpt-4-0125-preview": 128000,
         "gpt-4-turbo": 128000,
-        "claude-3-sonnet-20240229": 200000
+        "claude-3-sonnet-20240229": 200000,
+        "gpt-4o-mini": 128000
     }
     num_max_token = num_max_token_map[model]
 
     num_max_completion_tokens = num_max_token - num_prompt_tokens
 
-    if model == "gpt-4-0125-preview" or model == "gpt-4-turbo":
+    if model == "gpt-4-0125-preview" or model == "gpt-4-turbo" or model == "gpt-4o-mini":
         num_max_completion_tokens = min(num_max_completion_tokens, 4096)
     return num_max_completion_tokens
 
@@ -168,11 +169,11 @@ def query_gpt4(prompt, woretry=False, temperature=0.2):
     }
     if woretry:
         response = chat_completion_request_woretry(messages,
-                                                   model="gpt-4-0125-preview",
+                                                   model="gpt-4o-mini",
                                                    model_config_dict=model_config_dict)
     else:
         response = chat_completion_request(messages,
-                                           model="gpt-4-0125-preview",
+                                           model="gpt-4o-mini",
                                            model_config_dict=model_config_dict)
     response_text = response.choices[0].message.content
     return response_text
