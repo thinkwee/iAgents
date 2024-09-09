@@ -1,4 +1,4 @@
-# *FriendsTV* Dataset
+# iAgents *FriendsTV* Pipeline
 
 <p align="center">
   <img src='./FriendsTVPipeline.png' width=800>
