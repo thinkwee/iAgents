@@ -68,3 +68,4 @@ To generate the complete dataset:
 **Note**: 
 -   Ensure all required dependencies are installed and database configurations are set up correctly before running the scripts.
 -   Adjust scale in all these scripts, which means the number of samples to generate.
+-   All scripts require proper configuration of the iAgents README for LLM backend usage.
