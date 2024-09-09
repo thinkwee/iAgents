@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-    【🚀 <a href="#%EF%B8%8F-quickstart">Quickstart</a> | 📚 <a href="https://arxiv.org/abs/2406.14928">Paper</a> | 📖 <a href="wiki.md">Wiki</a> | 👥 <a href="wiki.md#interact-with-preset-database">Interact with <i>Friends</i></a> | 🔬 <a href="#-more-from-our-team">More from our Team</a>】
+    【🚀 <a href="#%EF%B8%8F-quickstart">Quickstart</a> | 📚 <a href="https://arxiv.org/abs/2406.14928">Paper</a> | 📖 <a href="wiki.md">Wiki</a> | 🏆 <a href="./data/README.md">informativeBench</a> | 👥 <a href="wiki.md#interact-with-preset-database">Interact with <i>Friends</i></a> | 🔬 <a href="#-more-from-our-team">More from our Team</a>】
 </p>
 
 ## 🎆 News
