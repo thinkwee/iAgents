@@ -16,8 +16,16 @@ from llama_index.readers.file import (
     XMLReader,
 )
 from pathlib import Path
+import yaml
+
+file_path = os.path.dirname(__file__)
+project_path = os.path.dirname(file_path)
+global_config = yaml.safe_load(open(os.path.join(project_path, "config/global.yaml"), "r"))
 
 from backend.ollama import *
+from backend.third_party import *
+from backend.gpt import *
+
 
 file_path = os.path.dirname(__file__)
 project_path = os.path.dirname(file_path)
@@ -26,7 +34,21 @@ class LlamaIndexer():
 
     def __init__(self, username) -> None:
         
-        self.llm = ollama_model
+        if global_config.get("backend").get("provider") == "ollama":
+            self.llm = ollama_model
+        elif global_config.get("backend").get("provider") == "deepseek":
+            self.llm = client_deepseek_llama_index
+        elif global_config.get("backend").get("provider") == "qwen":
+            self.llm = client_qwen_llama_index
+        elif global_config.get("backend").get("provider") == "glm":
+            self.llm = client_glm_llama_index
+        elif global_config.get("backend").get("provider") == "hunyuan":
+            self.llm = client_hunyuan_llama_index
+        elif global_config.get("backend").get("provider") == "spark":
+            self.llm = client_spark_llama_index
+        elif global_config.get("backend").get("provider") == "ernie":
+            raise NotImplementedError("ERNIE backend for llama_index not implemented")
+        
         self.embed_model = ollama_embed_model
         self.username = username
 

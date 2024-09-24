@@ -7,199 +7,202 @@ import yaml
 from backend.gemini import query_gemini
 from backend.gpt import query_claude, query_gpt, query_gpt4
 from backend.ollama import query_ollama
+from backend.third_party import *
 from iagents.tool import FaissTool, JsonFormatTool, MindFillTool, SqlTool
 from iagents.util import iAgentsLogger
 from iagents.llamaindex import LlamaIndexer
 
-# load global config
+# Load global config
 file_path = os.path.dirname(__file__)
 project_path = os.path.dirname(file_path)
-global_config = yaml.safe_load(open(os.path.join(project_path, "config/global.yaml"), "r"))
 
 try:
     with open(os.path.join(project_path, "config/global.yaml"), "r") as f:
         global_config = yaml.safe_load(f)
 except FileNotFoundError:
-    print("Config file not found.")
-    raise
+    raise FileNotFoundError("Config file not found.")
 except yaml.YAMLError as exc:
-    print("Error in configuration file:", exc)
-    raise
+    raise yaml.YAMLError(f"Error in configuration file: {exc}")
 
 class Agent(ABC):
-    """The Base class for Agent
-    It defines the backend llm of agent, 
-    and how to assemble the prompt of agents.    
+    """The Base class for Agent.
+    It defines the backend LLM of agent and how to assemble the prompt of agents.    
     """
 
-    def __init__(self, master, backend, task, is_assistant=False) -> None:
-        """init
+    def __init__(self, master: str, backend: str, task: str, is_assistant: bool = False) -> None:
+        """Initialize the Agent.
 
         Args:
-            master (str): name of the human master of agent (username in the chat database)
-            backend (str): name of the backend llm (gemini/gpt/gpt4)
-            task (str): task prompt
-            is_assistant (bool, optional): the agent who raises task is the instructor, the other is the assistant. Defaults to False.
-
+            master (str): Name of the human master of agent (username in the chat database).
+            backend (str): Name of the backend LLM (gemini/gpt/gpt4).
+            task (str): Task prompt.
+            is_assistant (bool, optional): The agent who raises task is the instructor, the other is the assistant. Defaults to False.
         """
         super().__init__()
-        # meta info
         self.master = master
         self.task = task
         self.agent_chat_history = []
-
-        # backend llm
         self.backend = backend
-        if self.backend == "gemini":
-            self.query_func = query_gemini
-        elif self.backend == "gpt":
-            self.query_func = query_gpt
-        elif self.backend == "gpt4":
-            self.query_func = query_gpt4
-        elif self.backend == "claude":
-            self.query_func = query_claude
-        elif self.backend == "ollama":
-            self.query_func = query_ollama
-        else:
-            raise ValueError("{} backend not implemented".format(backend))
+        self.query_func = self._get_query_func(backend)
         self.is_assistant = is_assistant
 
-        # load profile prompt
         prompt_path = os.path.join(project_path, "prompts")
-        if self.is_assistant:
-            system_prompt_filepath = os.path.join(prompt_path, "assistant_system_prompt.json")
-        else:
-            system_prompt_filepath = os.path.join(prompt_path, "instructor_system_prompt.json")
+        system_prompt_filepath = os.path.join(prompt_path, "assistant_system_prompt.json" if is_assistant else "instructor_system_prompt.json")
         with open(system_prompt_filepath, "r") as f:
             self.system_prompt = json.load(f)
 
-        # load tool prompt
         with open(os.path.join(project_path, "prompts", "tool_prompt.json"), "r") as f:
             self.tool_prompt = json.load(f)
 
-        # Tool
         self.sql_tool = SqlTool()
         self.json_tool = JsonFormatTool(self.query_func)
         self.mindfill_tool = MindFillTool(self.query_func)
 
-    def set_master(self, master):
+    def _get_query_func(self, backend: str):
+        """Get the query function based on the backend LLM.
+
+        Args:
+            backend (str): Name of the backend LLM.
+
+        Returns:
+            function: Query function for the specified backend.
+
+        Raises:
+            ValueError: If the backend is not implemented.
+        """
+        if backend == "gemini":
+            return query_gemini
+        elif backend == "gpt":
+            return query_gpt
+        elif backend == "gpt4":
+            return query_gpt4
+        elif backend == "claude":
+            return query_claude
+        elif backend == "ollama":
+            return query_ollama
+        elif backend == "deepseek":
+            return query_deepseek
+        elif backend == "qwen":
+            return query_qwen
+        elif backend == "ernie":
+            return query_ernie
+        elif backend == "glm":
+            return query_glm
+        elif backend == "hunyuan":
+            return query_hunyuan
+        elif backend == "spark":
+            return query_spark
+        else:
+            raise ValueError(f"{backend} backend not implemented")
+
+    def set_master(self, master: str) -> None:
+        """Set the master of the agent.
+
+        Args:
+            master (str): Name of the human master of agent.
+        """
         self.master = master
 
     @abstractmethod
-    def get_other_chat_history(self, receiver, communication_history=None) -> str:
-        """defines how the agent get the context from chatting with other friends
+    def get_other_chat_history(self, receiver: str, communication_history: list[str] = None) -> str:
+        """Get the context from chatting with other friends.
 
         Args:
-            receiver (str): the name of user in current chatting 
+            receiver (str): The name of user in current chatting.
+            communication_history (list[str], optional): The chat history between two agents. Defaults to None.
 
         Returns:
-            str: retrieved chat history as the context for assembling the query prompt.
+            str: Retrieved chat history as the context for assembling the query prompt.
         """
         pass
 
     @abstractmethod
-    def get_current_chat_history(self, receiver, communication_history) -> str:
-        """defines how the agent get the context from current chatting
+    def get_current_chat_history(self, receiver: str, communication_history: list[str]) -> str:
+        """Get the context from current chatting.
 
         Args:
-            receiver (str): the name of user in current chatting 
+            receiver (str): The name of user in current chatting.
+            communication_history (list[str]): The chat history between two agents.
 
         Returns:
-            str: retrieved chat history as the context for assembling the query prompt.
+            str: Retrieved chat history as the context for assembling the query prompt.
         """
         pass
 
-    def assemble_prompt(self, receiver, communication_history) -> str:
-        """defines the process of assembling query prompt
+    def assemble_prompt(self, receiver: str, communication_history: list[str]) -> str:
+        """Assemble the query prompt.
 
         Args:
-            receiver (str): the name of user in current chatting 
-            communication_history (list[str]): the chat history between two agents
+            receiver (str): The name of user in current chatting.
+            communication_history (list[str]): The chat history between two agents.
 
         Returns:
-            str: assembled prompt
+            str: Assembled prompt.
         """
         current_chat_history = self.get_current_chat_history(receiver, communication_history)
         other_chat_history = self.get_other_chat_history(receiver, communication_history)
         agent_profile_prompt = self.sql_tool.get_agent_profile_prompt(self.master)
 
-        # the prompt is assembled in the order of
-        # 1. define the role
-        # 2. give the retrieved context
-        # 3. define the task
-        # 4. give the current progress of agents' communication
-        # 5. define the return format
         system_prompt = "\n".join([
-            agent_profile_prompt, 
-            "\n".join(self.system_prompt['role']).format(master=self.master, 
-                                                         contact=receiver),
-            "\n".join(self.system_prompt['chat_history']).format(master=self.master,
-                                                                 contact=receiver,
-                                                                 current_chat_history=current_chat_history,
-                                                                 other_chat_history=other_chat_history),
-            "\n".join(self.system_prompt['task']).format(contact=receiver, 
-                                                         task=self.task),
-            "\n".join(self.system_prompt['agent_chat_history']).format(contact=receiver, 
-                                                                       agent_chat_history="\n".join(communication_history), 
-                                                                       master=self.master),
+            agent_profile_prompt,
+            "\n".join(self.system_prompt['role']).format(master=self.master, contact=receiver),
+            "\n".join(self.system_prompt['chat_history']).format(master=self.master, contact=receiver, current_chat_history=current_chat_history, other_chat_history=other_chat_history),
+            "\n".join(self.system_prompt['task']).format(contact=receiver, task=self.task),
+            "\n".join(self.system_prompt['agent_chat_history']).format(contact=receiver, agent_chat_history="\n".join(communication_history), master=self.master),
             "\n".join(self.system_prompt['return_format']),
         ])
 
         return system_prompt
 
-    def _query(self, receiver, communication_history) -> str:
-        """send the query to backend llm
+    def _query(self, receiver: str, communication_history: list[str]) -> str:
+        """Send the query to backend LLM.
 
         Args:
-            receiver (str): the name of user in current chatting 
-            communication_history (list[str]): the chat history between two agents
+            receiver (str): The name of user in current chatting.
+            communication_history (list[str]): The chat history between two agents.
 
         Returns:
-            str: llm response
+            str: LLM response.
         """
         query_str = self.assemble_prompt(receiver, communication_history)
         response = self.query_func(query_str)
-        iAgentsLogger.log(query_str, 
-                         response,
-                         "Query to generate message from {} to {}".format(self.master, receiver))
+        iAgentsLogger.log(query_str, response, f"Query to generate message from {self.master} to {receiver}")
         return response
 
-    def query(self, receiver, communication_history) -> str:
-        """Wrap on the _query method to ensure the return format is correct
+    def query(self, receiver: str, communication_history: list[str]) -> str:
+        """Wrap on the _query method to ensure the return format is correct.
 
         Args:
-            receiver (str): the name of user in current chatting 
-            communication_history (list[str]): the chat history between two agents
+            receiver (str): The name of user in current chatting.
+            communication_history (list[str]): The chat history between two agents.
 
         Returns:
-            str: llm response in json string
+            str: LLM response in JSON string.
         """
         raw_response = self._query(receiver, communication_history)
         response = raw_response
-        iAgentsLogger.log(instruction="response generated from {} to {}\nthe reformatted message:\n{}".format(self.master, receiver, response))
+        iAgentsLogger.log(instruction=f"response generated from {self.master} to {receiver}\nthe reformatted message:\n{response}")
         return response
 
-    def conclusion(self, communication_history) -> str:
-        """summarize the agents' communication and give the final answer to the task
+    def conclusion(self, communication_history: list[str]) -> str:
+        """Summarize the agents' communication and give the final answer to the task.
 
         Args:
-            communication_history (list[str]): the chat history between two agents
+            communication_history (list[str]): The chat history between two agents.
 
         Returns:
-            str: final answer to the task
+            str: Final answer to the task.
         """
-        query_str = "\n".join(self.tool_prompt['conclusion']).format(agent_communication="\n".join(communication_history), 
-                                                                     task=self.task)
+        query_str = "\n".join(self.tool_prompt['conclusion']).format(agent_communication="\n".join(communication_history), task=self.task)
         response = self.query_func(query_str)
         iAgentsLogger.log(query_str, response, "[Conclusion]")
         return response
 
     def get_friends(self) -> str:
-        """used in MultiPartyCommunication
-        get all friends of one user
+        """Get all friends of one user.
 
         Returns:
-            str: friend list
+            str: Friend list.
         """
         result_str = "\n"
         sql_execute_results = self.sql_tool.get_friends(self.master)
@@ -209,20 +212,16 @@ class Agent(ABC):
 
 
 class VanillaAgent(Agent):
+    """VanillaAgent uses SQL tool to get context."""
 
-    def __init__(self, master, backend, task, is_assistant=False) -> None:
-        """VanillaAgent uses sql tool to get context.
-        """
-        super().__init__(master, backend, task, is_assistant)
-
-    def get_other_chat_history(self, receiver, communication_history) -> str:
+    def get_other_chat_history(self, receiver: str, communication_history: list[str] = None) -> str:
         result_str = "\n"
         sql_execute_results = self.sql_tool.get_other_chat_history(self.master, receiver)
         for message in sql_execute_results:
             result_str += f"from {message[1]} to {message[2]}: {message[3]}\n"
         return result_str
 
-    def get_current_chat_history(self, receiver, communication_history) -> str:
+    def get_current_chat_history(self, receiver: str, communication_history: list[str]) -> str:
         result_str = "\n"
         sql_execute_results = self.sql_tool.get_current_chat_history(self.master, receiver)
         for message in sql_execute_results:
@@ -231,30 +230,23 @@ class VanillaAgent(Agent):
 
 
 class ThinkAgent(VanillaAgent):
-    """ThinkAgent inherits from VanillaAgent, and utilize InfoNav mechanism to manage the communication.
-    """
+    """ThinkAgent inherits from VanillaAgent and utilizes InfoNav mechanism to manage the communication."""
 
-    def __init__(self, master, backend, task, is_assistant=False) -> None:
+    def __init__(self, master: str, backend: str, task: str, is_assistant: bool = False) -> None:
         super().__init__(master, backend, task, is_assistant)
         self.infonav_plan = None
+        self.infonav_status = 0  # 0 for init plan; 1 for mark the unknown rationales in the plan; 2 for update the unknown rationales to known rationales
 
-        # the status of InfoNav
-        # 0 for init plan; 
-        # 1 for mark the unknown rationales in the plan
-        # 2 for update the unknown rationales to known rationales
-        self.infonav_status = 0  
-
-    def assemble_prompt_think(self, receiver, communication_history) -> str:
-        """InfoNav assembles the prompt for initializing/updating the plan
+    def assemble_prompt_think(self, receiver: str, communication_history: list[str]) -> str:
+        """InfoNav assembles the prompt for initializing/updating the plan.
 
         Args:
-            receiver (str): the name of user in current chatting 
-            communication_history (list[str]): the chat history between two agents
+            receiver (str): The name of user in current chatting.
+            communication_history (list[str]): The chat history between two agents.
 
         Returns:
-            str: assembled query prompt
+            str: Assembled query prompt.
         """
-        # init the infonav
         if self.infonav_status == 0:
             prompt_infonav = "\n".join(self.tool_prompt['infonav_init'])
             system_prompt = "\n".join([
@@ -262,7 +254,6 @@ class ThinkAgent(VanillaAgent):
                 "\n".join(self.system_prompt['task']).format(contact=receiver, task=self.task), prompt_infonav
             ])
             self.infonav_status += 1
-        # mark the infonav
         elif self.infonav_status == 1:
             prompt_infonav = "\n".join(self.tool_prompt['infonav_mark'])
             system_prompt = "\n".join([
@@ -270,7 +261,6 @@ class ThinkAgent(VanillaAgent):
                 prompt_infonav.format(task=self.task, infonav=self.infonav_plan)
             ])
             self.infonav_status += 1
-        # update the infonav
         else:
             prompt_infonav = "\n".join(self.tool_prompt['infonav_update']).format(infonav=self.infonav_plan,
                                                                                   known_facts=self.mindfill_tool.get_known_facts(),
@@ -284,91 +274,61 @@ class ThinkAgent(VanillaAgent):
 
         return system_prompt
 
-    def assemble_prompt(self, receiver, communication_history, current_chat_history, other_chat_history) -> str:
-        # add the infonav plan to the query prompt
+    def assemble_prompt(self, receiver: str, communication_history: list[str], current_chat_history: str, other_chat_history: str) -> str:
         agent_profile_prompt = self.sql_tool.get_agent_profile_prompt(self.master)
         system_prompt = "\n".join([
             agent_profile_prompt,
-            "\n".join(self.system_prompt['role']).format(master=self.master, 
-                                                         contact=receiver),
-            "\n".join(self.system_prompt['chat_history']).format(master=self.master,
-                                                                 contact=receiver,
-                                                                 current_chat_history=current_chat_history,
-                                                                 other_chat_history=other_chat_history),
-            "\n".join(self.system_prompt['task']).format(contact=receiver, 
-                                                         task=self.task),
-            "\n".join(self.system_prompt['agent_chat_history']).format(contact=receiver, 
-                                                                       agent_chat_history="\n".join(communication_history), 
-                                                                       master=self.master),
-            "\n".join(self.system_prompt['return_format_withinfonav']).format(infonav=self.infonav_plan, 
-                                                                              unknown_facts=self.mindfill_tool.get_unknown_facts()),
+            "\n".join(self.system_prompt['role']).format(master=self.master, contact=receiver),
+            "\n".join(self.system_prompt['chat_history']).format(master=self.master, contact=receiver, current_chat_history=current_chat_history, other_chat_history=other_chat_history),
+            "\n".join(self.system_prompt['task']).format(contact=receiver, task=self.task),
+            "\n".join(self.system_prompt['agent_chat_history']).format(contact=receiver, agent_chat_history="\n".join(communication_history), master=self.master),
+            "\n".join(self.system_prompt['return_format_withinfonav']).format(infonav=self.infonav_plan, unknown_facts=self.mindfill_tool.get_unknown_facts()),
         ])
 
         return system_prompt
 
-    def _query(self, receiver, communication_history) -> str:
-        """first update/init the infonav, 
-        then incorporate the infonav plan in the final query prompt
+    def _query(self, receiver: str, communication_history: list[str]) -> str:
+        """First update/init the infonav, then incorporate the infonav plan in the final query prompt.
 
         Args:
-            receiver (str): the name of user in current chatting 
-            communication_history (list[str]): the chat history between two agents
+            receiver (str): The name of user in current chatting.
+            communication_history (list[str]): The chat history between two agents.
 
         Returns:
-            str: llm response
+            str: LLM response.
         """
         current_chat_history = self.get_current_chat_history(receiver, communication_history)
         other_chat_history = self.get_other_chat_history(receiver, communication_history)
 
-        # init and update the infonav in the first utterance
         if self.infonav_status < 2:
             query_think = self.assemble_prompt_think(receiver, communication_history)
             self.infonav_plan = self.query_func(query_think)
-            iAgentsLogger.log(query_think, self.infonav_plan,
-                             "[Init infonav from {} to {}:]".format(self.master, receiver))
+            iAgentsLogger.log(query_think, self.infonav_plan, f"[Init infonav from {self.master} to {receiver}:]")
 
-            # mark the infonav (invoke assemble_prompt_think again, but self.infonav_status changed)
             query_think = self.assemble_prompt_think(receiver, communication_history)
             self.infonav_plan = self.query_func(query_think)
-            iAgentsLogger.log(query_think, self.infonav_plan,
-                             "[Mark infonav from {} to {}:]".format(self.master, receiver))
+            iAgentsLogger.log(query_think, self.infonav_plan, f"[Mark infonav from {self.master} to {receiver}:]")
 
-            # list all unknown facts in the infonav
             self.mindfill_tool.set_unknown_facts(self.infonav_plan)
 
-        # update the infonav
         else:
             query_think = self.assemble_prompt_think(receiver, communication_history)
             updated_facts = self.query_func(query_think)
-            iAgentsLogger.log(query_think, updated_facts,
-                             "[Updated facts from {} to {}:]".format(self.master, receiver))
+            iAgentsLogger.log(query_think, updated_facts, f"[Updated facts from {self.master} to {receiver}:]")
             self.infonav_plan = self.mindfill_tool.fill_mind(self.infonav_plan, updated_facts)
 
-        # get the final query prompt
-        query_action = self.assemble_prompt(receiver, communication_history, current_chat_history,
-                                            other_chat_history)
+        query_action = self.assemble_prompt(receiver, communication_history, current_chat_history, other_chat_history)
         response = self.query_func(query_action)
-        iAgentsLogger.log(query_action, response,
-                         "[Query to generate message from {} to {}]".format(self.master, receiver))
+        iAgentsLogger.log(query_action, response, f"[Query to generate message from {self.master} to {receiver}]")
         return response
 
 
 class MemoryAgent(ThinkAgent):
+    """MemoryAgent inherits from ThinkAgent and has the mixed memory mechanism which reactively adjusts the query for distinct (SQL) memory retrieval and fuzzy (FAISS) memory retrieval."""
 
-    def __init__(self,
-                 master,
-                 backend,
-                 task,
-                 is_assistant=False,
-                 enable_distinct_memory=True,
-                 enable_fuzzy_memory=False,
-                 memory_name="") -> None:
-        """MemoryAgent inherits from ThinkAgent, 
-        and it has the mixed memory mechanism which reactively adjust the query for distinct(sql) memory retrieval and fuzzy(faiss) memory retrieval.
-        """
+    def __init__(self, master: str, backend: str, task: str, is_assistant: bool = False, enable_distinct_memory: bool = True, enable_fuzzy_memory: bool = False, memory_name: str = "") -> None:
         super().__init__(master, backend, task, is_assistant)
 
-        # previous status of memory for reactive adjustment
         self.previous_sql_result = "None"
         self.previous_sql_params = "None"
         self.previous_sql_result_cur = "None"
@@ -394,13 +354,26 @@ class MemoryAgent(ThinkAgent):
         self.llamaindexer = LlamaIndexer(self.master)
 
 
-    def set_master(self, master):
+    def set_master(self, master: str) -> None:
+        """Set the master of the agent.
+
+        Args:
+            master (str): Name of the human master of agent.
+        """
         self.master = master
         self.memory_file_path = os.path.join(project_path, "memory", self.memory_name, master + ".tsv")
         self.faiss_tool = FaissTool(self.memory_file_path)
 
-    def get_current_chat_history(self, receiver, communication_history) -> str:
-        # TODO reformat the relationships between current/other chat history and distinct/fuzzy memory
+    def get_current_chat_history(self, receiver: str, communication_history: list[str]) -> str:
+        """Get the context from current chatting.
+
+        Args:
+            receiver (str): The name of user in current chatting.
+            communication_history (list[str]): The chat history between two agents.
+
+        Returns:
+            str: Retrieved chat history as the context for assembling the query prompt.
+        """
         result_str = "\n\n"
 
         # add distinct memory
@@ -439,7 +412,16 @@ class MemoryAgent(ThinkAgent):
 
         return result_str
 
-    def get_other_chat_history(self, receiver, communication_history) -> str:
+    def get_other_chat_history(self, receiver: str, communication_history: list[str]) -> str:
+        """Get the context from chatting with other friends.
+
+        Args:
+            receiver (str): The name of user in current chatting.
+            communication_history (list[str]): The chat history between two agents.
+
+        Returns:
+            str: Retrieved chat history as the context for assembling the query prompt.
+        """
         result_str = ""
 
         # add distinct memory

@@ -7,11 +7,19 @@
 </p>
 
 ## 🎆 News
+* 2024.9.28  ✅ iAgents now supports more LLM backends! Now supports `deepseek`, `glm`, `hunyuan`, `ernie`, `spark` and `qwen`~
+      <p align="center">
+         <img src='./static/more_backends.png' width=800>
+      </p>
 
-- 2024.9.9 ✅ Check out [**informativeBench**](./data/README.md), a meticulously crafted benchmark designed to evaluate language models and agents in information-asymmetric collaborative environments. 
+<details>
+<summary> 2024.9.9 ✅ We release informativeBench!</summary>
+
+* Check out [**informativeBench**](./data/README.md)!, a meticulously crafted benchmark designed to evaluate language models and agents in information-asymmetric collaborative environments. 
       <p align="center">
          <img src='./data/informativebench.png' width=800>
       </p>
+</details>
 
 <details>
 <summary> 2024.7.23 ✅ iAgents now supports Agent Cultivate! </summary>

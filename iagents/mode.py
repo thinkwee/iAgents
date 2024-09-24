@@ -12,6 +12,8 @@ class Mode():
 
         ModeName                 InfoNav     MultiCommunication      Memory
     1.  Base                      Double        --                    Distinct
+    2.  RAG                       Double        --                    LlamaIndex
+
 
     For those with MultiCommunication enabled,
     The mode used in the raised new third-party communication is the same as invoker mode,
@@ -42,6 +44,18 @@ class Mode():
             self.query_func = query_claude
         elif self.backend == "ollama":
             self.query_func = query_ollama
+        elif self.backend == "deepseek":
+            self.query_func = query_deepseek
+        elif self.backend == "qwen":
+            self.query_func = query_qwen
+        elif self.backend == "ernie":
+            self.query_func = query_ernie
+        elif self.backend == "glm":
+            self.query_func = query_glm
+        elif self.backend == "hunyuan":
+            self.query_func = query_hunyuan
+        elif self.backend == "spark":
+            self.query_func = query_spark
         else:
             raise ValueError("{} backend not implemented".format(self.backend))
 
@@ -57,7 +71,7 @@ class Mode():
             self.task = self.query_func(query_prompt)
             iAgentsLogger.log(query_prompt, self.task, "[rewrite task]")
 
-        self.realized_modes = {"Base"}
+        self.realized_modes = {"Base", "RAG"}
         assert self.mode_name in self.realized_modes, "{} not realized, iagents now supports: {}".format(
             self.mode_name, str(self.realized_modes))
 
@@ -71,10 +85,14 @@ class Mode():
 
     def get_instructor_agent(self):
         if self.mode_name in {'Base'}:
+            return ThinkAgent(master=self.sender, backend=self.backend, task=self.task)
+        elif self.mode_name in {'RAG'}:
             return MemoryAgent(master=self.sender, backend=self.backend, task=self.task)
 
     def get_assistant_agent(self):
         if self.mode_name in {'Base'}:
+            return ThinkAgent(master=self.receiver, backend=self.backend, task=self.task, is_assistant=True)
+        elif self.mode_name in {'RAG'}:
             return MemoryAgent(master=self.receiver, backend=self.backend, task=self.task, is_assistant=True)
 
     def get_communication(self, is_offline=False):
@@ -85,6 +103,7 @@ class Mode():
         2. whether Multi-Party Communication
         3. whether consensus conclusion
         4. whether OfflineLoad conclusions from Multi-Party Communication
+        5. whether use llamaindex to retrieve external memory
 
         Args:
             is_offline (bool, optional): whether offline. Defaults to False.
@@ -95,7 +114,7 @@ class Mode():
         instructor_agent = self.get_instructor_agent()
         assistant_agent = self.get_assistant_agent()
 
-        if self.mode_name in {'Base'}:
+        if self.mode_name in {'Base', 'RAG'}:
             if is_offline:
                 comm = OfflineCommunication(
                     instructor=instructor_agent,
