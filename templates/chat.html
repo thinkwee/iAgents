@@ -124,6 +124,10 @@
             <p style="text-align: center; font-style: italic;">Agent is processing your request...</p>
         </div>
 
+        <div id="progress-container" style="display: none;">
+            <div id="progress-bar" style="width: 0%; height: 20px; background-color: #4caf50;"></div>
+        </div>
+
         <script>
             let previousChat = '';
 
@@ -458,7 +462,21 @@
                 }
             });
 
+            function showProgressBar() {
+                document.getElementById('progress-container').style.display = 'block';
+                document.getElementById('progress-bar').style.width = '0%';
+            }
+
+            function updateProgressBar(percentage) {
+                document.getElementById('progress-bar').style.width = percentage + '%';
+            }
+
+            function hideProgressBar() {
+                document.getElementById('progress-container').style.display = 'none';
+            }
+
             function uploadFiles(files, url) {
+                showProgressBar();
                 const formData = new FormData();
                 for (let i = 0; i < files.length; i++) {
                     formData.append('files[]', files[i]);
@@ -470,16 +488,21 @@
                 }).then(response => {
                     if (response.ok) {
                         showToast('Files uploaded successfully', true);
+                        updateProgressBar(100);
+                        setTimeout(hideProgressBar, 2000);
                     } else {
                         showToast('File upload failed', false);
+                        hideProgressBar();
                     }
                 }).catch(error => {
                     console.error('Error:', error);
                     showToast('File upload failed', false);
+                    hideProgressBar();
                 });
             }
 
             function uploadURL(url, targetUrl) {
+                showProgressBar();
                 fetch(targetUrl, {
                     method: 'POST',
                     headers: {
@@ -489,12 +512,16 @@
                 }).then(response => {
                     if (response.ok) {
                         showToast('URL content uploaded successfully', true);
+                        updateProgressBar(100);
+                        setTimeout(hideProgressBar, 2000);
                     } else {
                         showToast('URL content upload failed', false);
+                        hideProgressBar();
                     }
                 }).catch(error => {
                     console.error('Error:', error);
                     showToast('URL content upload failed', false);
+                    hideProgressBar();
                 });
             }
 

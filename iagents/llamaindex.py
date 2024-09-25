@@ -22,8 +22,8 @@ file_path = os.path.dirname(__file__)
 project_path = os.path.dirname(file_path)
 global_config = yaml.safe_load(open(os.path.join(project_path, "config/global.yaml"), "r"))
 
-from backend.ollama import *
 from backend.third_party import *
+from backend.third_party_embedding import *
 from backend.gpt import *
 
 
@@ -33,13 +33,15 @@ project_path = os.path.dirname(file_path)
 class LlamaIndexer():
 
     def __init__(self, username) -> None:
-        
         if global_config.get("backend").get("provider") == "ollama":
+            from backend.ollama import ollama_model, ollama_embed_model
             self.llm = ollama_model
+            self.embed_model = ollama_embed_model
         elif global_config.get("backend").get("provider") == "deepseek":
             self.llm = client_deepseek_llama_index
         elif global_config.get("backend").get("provider") == "qwen":
             self.llm = client_qwen_llama_index
+            self.embed_model = dashscope_embedder
         elif global_config.get("backend").get("provider") == "glm":
             self.llm = client_glm_llama_index
         elif global_config.get("backend").get("provider") == "hunyuan":
@@ -49,7 +51,6 @@ class LlamaIndexer():
         elif global_config.get("backend").get("provider") == "ernie":
             raise NotImplementedError("ERNIE backend for llama_index not implemented")
         
-        self.embed_model = ollama_embed_model
         self.username = username
 
         self.user_directory = os.path.join(project_path, "userfiles", self.username)

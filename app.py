@@ -260,27 +260,27 @@ def upload_file():
         data = request.get_json()
         url = data.get('url')
         if not url:
-            return 'No URL provided', 400
+            return jsonify({'error': 'No URL provided'}), 400
         
         modified_url = f"https://r.jina.ai/{url}"
         response = requests.get(modified_url)
         if response.status_code == 200:
             content = response.text
-            filename = secure_filename(url.split('/')[-1] + '.txt')
+            filename = secure_filename(url + '.txt')
             file_path = os.path.join(user_directory, filename)
             with open(file_path, 'w') as file:
                 file.write(content)
             llama_indexer.update_index_with_new_files([file_path])
-            return 'URL content uploaded successfully', 200
+            return jsonify({'message': 'URL content uploaded successfully'}), 200
         else:
-            return 'Failed to fetch URL content', 500
+            return jsonify({'error': 'Failed to fetch URL content'}), 500
 
     if 'files[]' not in request.files:
-        return 'No file part', 400
+        return jsonify({'error': 'No file part'}), 400
 
     files = request.files.getlist('files[]')
     if not files:
-        return 'No selected file', 400
+        return jsonify({'error': 'No selected file'}), 400
 
     new_files = []
 
@@ -293,9 +293,9 @@ def upload_file():
 
     if new_files:
         llama_indexer.update_index_with_new_files(new_files)
-        return 'Files uploaded successfully', 200
+        return jsonify({'message': 'Files uploaded successfully'}), 200
 
-    return 'File upload failed', 500
+    return jsonify({'error': 'File upload failed'}), 500
 
 @app.route('/delete_all_files', methods=['POST'])
 def delete_all_files():
