@@ -9,7 +9,7 @@
 </p>
 
 ## 🎆 News
-* 2024.9.26 🎉🎉🎉 Our paper *Autonomous Agents for Collaborative Task under Information Asymmetry* is accepted by NeurIPS 2024! Also, we release the [official website](https:/thinkwee.top/iagents) for **iAgents**! 🌟 The iAgents platform will be free for everyone to use (coming soon)! 🥳
+* 2024.9.26 🎉🎉🎉 Our paper *Autonomous Agents for Collaborative Task under Information Asymmetry* is accepted by NeurIPS 2024! Also, we release the [official website](https://thinkwee.top/iagents) for **iAgents**! 🌟 The iAgents platform will be free for everyone to use (coming soon)! 🥳
 
 * 2024.9.24  ✅ iAgents now supports more LLM backends! Now supports `deepseek`, `glm`, `hunyuan`, `ernie`, `spark` and `qwen`~
       <p align="center">
