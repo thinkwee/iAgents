@@ -3,11 +3,15 @@
 </p>
 
 <p align="center">
-    【🚀 <a href="#%EF%B8%8F-quickstart">Quickstart</a> | 📚 <a href="https://arxiv.org/abs/2406.14928">Paper</a> | 📖 <a href="wiki.md">Wiki</a> | 🏆 <a href="./data/README.md">informativeBench</a> | 👥 <a href="wiki.md#interact-with-preset-database">Interact with <i>Friends</i></a> | 🔬 <a href="#-more-from-our-team">More from our Team</a>】
+    【🎉 <a href="https://thinkwee.top/iagents">Website</a> | 🚀 <a href="#%EF%B8%8F-quickstart">Quickstart</a> | 📚 <a href="https://arxiv.org/abs/2406.14928">Paper</a> 】
+    <br>
+    【📖 <a href="wiki.md">Wiki</a> | 🏆 <a href="./data/README.md">informativeBench</a> | 👥 <a href="wiki.md#interact-with-preset-database">Interact with <i>Friends</i></a> | 🔬 <a href="#-more-from-our-team">More from our Team</a>】
 </p>
 
 ## 🎆 News
-* 2024.9.28  ✅ iAgents now supports more LLM backends! Now supports `deepseek`, `glm`, `hunyuan`, `ernie`, `spark` and `qwen`~
+* 2024.9.26 🎉🎉🎉 Our paper *Autonomous Agents for Collaborative Task under Information Asymmetry* is accepted by NeurIPS 2024! Also, we release the [official website](https:/thinkwee.top/iagents) for **iAgents**! 🌟 The iAgents platform will be free for everyone to use (coming soon)! 🥳
+
+* 2024.9.24  ✅ iAgents now supports more LLM backends! Now supports `deepseek`, `glm`, `hunyuan`, `ernie`, `spark` and `qwen`~
       <p align="center">
          <img src='./static/more_backends.png' width=800>
       </p>
