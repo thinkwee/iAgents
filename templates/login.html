@@ -3,13 +3,164 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Login or Register</title>
+    <title>iAgents</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login_style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            position: relative;
+            z-index: 1;
+            background: url("{{ url_for('static', filename='login_bg.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        body::before {  
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+            z-index: 0;
+        }
+
+        header {
+            position: relative;
+            z-index: 2;
+            background-color: #f5f5f5;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-title {
+            position: relative;
+            z-index: 3; /* Ensure it's above the mask */
+            display: block;
+            margin: 50px auto -80px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: 100px auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .character {
+            position: absolute;
+            width: 100px;  
+            height: 100px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            filter: brightness(90%);
+        }
+
+        .walk {
+            animation: walk 10s infinite linear;
+        }
+
+        .jump {
+            animation: jump 2s infinite;
+        }
+
+        .wave {
+            animation: wave 3s infinite;
+        }
+
+        .lie {
+            animation: lie 5s infinite;
+        }
+
+        @keyframes walk {
+            0% {
+                left: 0;
+            }
+            100% {
+                left: calc(100% - 50px);
+            }
+        }
+
+        @keyframes jump {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-30px);
+            }
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(20deg);
+            }
+        }
+
+        @keyframes lie {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(10px);
+            }
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>iAgents</h1>
-    <h2>towards a world interwind by humans and agents</h2>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="https://github.com/thinkwee/iagents" target="_blank" class="btn">GitHub</a></li>
+                <li><a href="https://arxiv.org/abs/2406.14928" target="_blank" class="btn">Paper</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <img src="{{ url_for('static', filename='login_title.png') }}" alt="iAgents" width="400px" class="login-title">
 
     <div class="container"> 
         <h2>Login</h2>
@@ -30,6 +181,62 @@
             <input type="submit" value="Register">
         </form>
     </div>
+
+    <script>
+        const characters = [
+            { animation: 'bounce', image: "{{ url_for('static', filename='login_avatar1.png') }}" },
+            { animation: 'bounce', image: "{{ url_for('static', filename='login_avatar2.png') }}" },
+            { animation: 'bounce', image: "{{ url_for('static', filename='login_avatar3.png') }}" },
+            { animation: 'bounce', image: "{{ url_for('static', filename='login_avatar4.png') }}" }
+        ];
+
+        const usedPositions = [];
+
+        characters.forEach((char, index) => {
+            const character = document.createElement('div');
+            character.className = 'character';
+            character.style.backgroundImage = `url('${char.image}')`;
+
+            let leftPosition;
+            do {
+                const randomPosition = Math.random();
+                if (randomPosition < 0.5) {
+                    leftPosition = 10 + (Math.random() * 20); 
+                } else {
+                    leftPosition = 70 + (Math.random() * 20); 
+                }
+            } while (usedPositions.some(pos => Math.abs(pos - leftPosition) < 10)); 
+
+            usedPositions.push(leftPosition);
+
+            character.style.left = `${leftPosition}%`;
+            character.style.bottom = `${Math.random() * 20 + 140}px`;
+            document.body.appendChild(character);
+
+            const tl = gsap.timeline({ repeat: -1, delay: Math.random() * 0.5 }); 
+
+            switch (char.animation) {
+                case 'bounce':
+                    tl.to(character, { y: -30, duration: 0.5, ease: "power1.inOut" })
+                      .to(character, { y: 0, duration: 0.5, ease: "power1.inOut" });
+                    break;
+                case 'jello':
+                    tl.to(character, { rotation: 20, duration: 0.5, ease: "power1.inOut" })
+                      .to(character, { rotation: -20, duration: 0.5, ease: "power1.inOut" })
+                      .to(character, { rotation: 0, duration: 0.5, ease: "power1.inOut" });
+                    break;
+                case 'swing':
+                    tl.to(character, { rotation: 20, duration: 0.5, ease: "power1.inOut" })
+                      .to(character, { rotation: -20, duration: 0.5, ease: "power1.inOut" })
+                      .to(character, { rotation: 0, duration: 0.5, ease: "power1.inOut" });
+                    break;
+                case 'rubberBand':
+                    tl.to(character, { scaleX: 1.25, scaleY: 0.75, duration: 0.5, ease: "power1.inOut" })
+                      .to(character, { scaleX: 1, scaleY: 1, duration: 0.5, ease: "power1.inOut" });
+                    break;
+            }
+        });
+    </script>
 </body>
 
 </html>

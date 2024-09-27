@@ -89,11 +89,13 @@
 
 ## 📖 Overview
 
+<p align="center">
+  <img src='./static/demo.png' width=800>
+</p>
+
 - **iAgents** is a platform **designed to create a world weaved by humans and agents**, where each human has a personal **agent** that can work on their behalf to cooperate with other humans' agents. It is a new paradigm for [Large Language Model-powered Multi-Agent Systems](https://thinkwee.top/multiagent_ebook/index.html). **iAgents** proactively interact with human users to exchange information, while autonomously communicating with other agents to eliminate information asymmetry and collaborate effectively to accomplish tasks ([see our paper](https://arxiv.org/abs/2406.14928)).
 
-<p align="center">
-  <img src='./static/demo.png' width=1000>
-</p>
+
 
 ## ⚡️ Quickstart
 - **iAgents** features an instant messaging web UI that users can utilize as a conventional chat application, with each user automatically equipped with a personal agent. Messages beginning with '@' are automatically transformed into collaborative task commands, prompting the agents of both chat participants to engage and resolve the task through autonomous communication.

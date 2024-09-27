@@ -43,7 +43,9 @@ class LlamaIndexer():
             self.llm = client_qwen_llama_index
             self.embed_model = dashscope_embedder
         elif global_config.get("backend").get("provider") == "glm":
+            from  backend.ollama import ollama_embed_model
             self.llm = client_glm_llama_index
+            self.embed_model = ollama_embed_model
         elif global_config.get("backend").get("provider") == "hunyuan":
             self.llm = client_hunyuan_llama_index
         elif global_config.get("backend").get("provider") == "spark":
