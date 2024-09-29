@@ -1,5 +1,5 @@
 backend:
-  provider: spark # ollama, openai, deepseek, gemini, mixed, qwen, ernie, glm, spark, hunyuan
+  provider: glm # ollama, openai, deepseek, gemini, mixed, qwen, ernie, glm, spark, hunyuan
   google_api_key: YOUR_GOOGLE_API_KEY_HERE # only for gemini
   openai_api_key: YOUR_OPENAI_KEY_HERE # only for openai
   deepseek_api_key: YOUR_DEEPSEEK_API_KEY_HERE # only for deepseek
@@ -30,4 +30,4 @@ agent:
   rewrite_prompt: False
   use_llamaindex: True
 mode:
-  mode: RAG # Base, RAG
+  mode: Base # Base, RAG

@@ -7,6 +7,44 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='chat_style.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+    marked.use({
+      extensions: [{
+        name: 'table',
+        level: 'block',
+        start(src) { return src.match(/^\s*\|/)?.index; },
+        tokenizer(src, tokens) {
+          const match = src.match(/^\s*\|(.+)\n\s*\|(?:[-:]+[-| :]*)\n((?:\s*\|.*(?:\n|$))*)\s*$/);
+          if (match) {
+            return {
+              type: 'table',
+              raw: match[0],
+              header: match[1].trim().split('|').map(s => s.trim()),
+              align: match[2].trim().split('|').map(s => s.trim().match(/^ *:-+: *$/) ? 'center' : s.trim().match(/^ *:-+ *$/) ? 'left' : s.trim().match(/^ *-+: *$/) ? 'right' : null),
+              cells: match[3].trim().split('\n').map(row => row.trim().split('|').map(s => s.trim()))
+            };
+          }
+        },
+        renderer(token) {
+          let html = '<table>\n<thead>\n<tr>\n';
+          for (let i = 0; i < token.header.length; i++) {
+            html += `<th${token.align[i] ? ` align="${token.align[i]}"` : ''}>${marked.parseInline(token.header[i])}</th>\n`;
+          }
+          html += '</tr>\n</thead>\n<tbody>\n';
+          for (const row of token.cells) {
+            html += '<tr>\n';
+            for (let i = 0; i < row.length; i++) {
+              html += `<td${token.align[i] ? ` align="${token.align[i]}"` : ''}>${marked.parseInline(row[i])}</td>\n`;
+            }
+            html += '</tr>\n';
+          }
+          html += '</tbody>\n</table>\n';
+          return html;
+        }
+      }]
+    });
+    </script>
 </head>
 
 <body>
@@ -184,7 +222,7 @@
 
 
                                 const messageContent = document.createElement('div');
-                                messageContent.innerHTML = `<span>${message.message}</span>`;
+                                messageContent.innerHTML = renderMarkdownWithTables(message.message);
                                 messageContent.classList.add('message-content');
                                 messageContent.classList.add(bubbleClass);
 
@@ -647,7 +685,7 @@
                                 senderInfo.appendChild(senderName);
 
                                 const messageContent = document.createElement('div');
-                                messageContent.innerHTML = `<span>${message.message}</span>`;
+                                messageContent.innerHTML = marked.parse(message.message);
                                 messageContent.classList.add('message-content');
                                 messageContent.classList.add(bubbleClass);
 
@@ -693,6 +731,37 @@
                     });
                 });
             });
+
+            function renderMarkdownWithTables(text) {
+                const tableRegex = /\|(.+)\n\|(?:[-:]+[-| :]*)\n((?:\|.+\n?)+)/g;
+                text = text.replace(tableRegex, (match) => {
+                    const rows = match.trim().split('\n');
+                    const headers = rows[0].split('|').filter(cell => cell.trim() !== '');
+                    const alignments = rows[1].split('|').filter(cell => cell.trim() !== '').map(cell => {
+                        if (cell.startsWith(':') && cell.endsWith(':')) return 'center';
+                        if (cell.endsWith(':')) return 'right';
+                        return 'left';
+                    });
+                    const body = rows.slice(2).map(row => row.split('|').filter(cell => cell.trim() !== ''));
+
+                    let tableHtml = '<table><thead><tr>';
+                    headers.forEach((header, i) => {
+                        tableHtml += `<th align="${alignments[i] || 'left'}">${header.trim()}</th>`;
+                    });
+                    tableHtml += '</tr></thead><tbody>';
+                    body.forEach(row => {
+                        tableHtml += '<tr>';
+                        for (let i = 0; i < headers.length; i++) {
+                            tableHtml += `<td align="${alignments[i] || 'left'}">${(row[i] || '').trim()}</td>`;
+                        }
+                        tableHtml += '</tr>';
+                    });
+                    tableHtml += '</tbody></table>';
+                    return tableHtml;
+                });
+
+                return marked.parse(text);
+            }
 
         </script>
     </div>

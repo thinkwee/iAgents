@@ -223,92 +223,90 @@ h2 {
     display: flex;
     flex-direction: column;
     list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.message-item {
+    margin-bottom: 8px; /* Reduced from 10px */
+}
+
+.chat-message {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 5px;
 }
 
 .chat-message.left {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 10px;
     justify-content: flex-start;
 }
 
 .chat-message.right {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 10px;
     justify-content: flex-end;
-
 }
 
 .message-content {
     max-width: 70%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 18px;
+    padding: 10px 15px;
+    margin: 0 5px;
+    border-radius: 20px; /* Increased from 18px */
     word-wrap: break-word;
     white-space: pre-wrap;
-    line-height: 1.5;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border: 1px solid #dcdcdc;
+    line-height: 1.5; /* Adjusted from 1.4 */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    border: none;
+    font-size: 15px; /* Increased from 14px */
 }
 
 .sender-info {
     display: flex;
     flex-direction: column;
-
-    margin-right: 5px;
+    align-items: center;
+    margin: 0 5px;
 }
 
 .sender-info.left {
-    margin-right: 5px;
-    align-items: center;
-
+    margin-right: 8px;
 }
 
 .sender-info.right {
-    margin-left: 5px;
-    align-items: center;
+    margin-left: 8px;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px; /* Increased from 32px */
+    height: 36px; /* Increased from 32px */
     border-radius: 50%;
     border: 2px solid #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .sender-name {
-    margin-top: 5px;
-    font-size: 12px;
-    text-align: center;
+    margin-top: 2px;
+    font-size: 11px; /* Increased from 10px */
+    color: #555; /* Changed from #666 */
 }
 
 .sent_bubble {
-    background: linear-gradient(to bottom, #76c7c0, #5ef17c);
-    text-align: left;
+    background: linear-gradient(to bottom right, #e1ffc7, #d0f8b8);
+    color: #000;
 }
 
 .received_bubble {
-    background: linear-gradient(to bottom, #f2f2f2, #e0e0e0);
-    text-align: left;
+    background: linear-gradient(to bottom right, #f0f0f0, #e5e5e5);
+    color: #000;
 }
 
 .agent_sent_bubble {
-    background: linear-gradient(to bottom, #d4f1d1, #a9e6a1);
+    background: linear-gradient(to bottom right, #c5e1ff, #b0d4f7);
+    color: #000;
     font-style: italic;
 }
 
 .agent_receive_bubble {
-    background: linear-gradient(to bottom, #f8e2e4, #f1c6ca);
+    background: linear-gradient(to bottom right, #ffd6d6, #ffbebe);
+    color: #000;
     font-style: italic;
-}
-
-.message-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin: 0 10px;
 }
 
 .feedback_bubble_sent,
@@ -338,11 +336,12 @@ textarea[name="message"] {
     padding: 10px 15px;
     resize: none;
     font-size: 14px;
-    height: 40px; /* Keep this height */
-    border-radius: 8px 0 0 8px;
-    border: 1px solid #d1d5db;
+    height: 40px;
+    border-radius: 20px 0 0 20px;
+    border: 1px solid #ccc;
     transition: border-color 0.3s ease;
-    box-sizing: border-box; /* Add this line */
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
 }
 
 textarea[name="message"]:focus {
@@ -707,14 +706,14 @@ input[type="text"][name="friend_name"] {
     background-color: #06C05F;
     color: #fff;
     border: none;
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 20px 20px 0;
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-size: 14px;
-    font-weight: 500;
-    height: 40px; /* Match the height of textarea (40px) + its top and bottom borders (1px each) */
-    line-height: 42px; /* Center text vertically */
-    box-sizing: border-box; /* Add this line */
+    font-weight: bold;
+    height: 40px;
+    line-height: 40px;
+    box-sizing: border-box;
 }
 
 .message-input input[type="submit"]:hover {
@@ -724,4 +723,97 @@ input[type="text"][name="friend_name"] {
 .friend-list li.selected {
     background-color: #e9ecef;
     border-left-color: #06C05F;
+}
+
+/* Chat history scrollbar */
+.chat-history::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-history::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+    border-radius: 4px;
+}
+
+.chat-history::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+/* Markdown styles */
+.message-content {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.message-content h1, .message-content h2, .message-content h3, 
+.message-content h4, .message-content h5, .message-content h6 {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+}
+
+.message-content p {
+    margin-bottom: 0.5em;
+}
+
+.message-content code {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+    padding: 0.2em 0.4em;
+    font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.message-content pre {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+    padding: 1em;
+    overflow-x: auto;
+}
+
+.message-content pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+.message-content blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1em;
+    margin-left: 0;
+    color: #666;
+}
+
+.message-content ul, .message-content ol {
+    padding-left: 2em;
+}
+
+.message-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+.message-content a {
+    color: #0366d6;
+    text-decoration: none;
+}
+
+.message-content a:hover {
+    text-decoration: underline;
+}
+
+.message-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1em;
+    font-size: 0.9em;
+}
+.message-content th, .message-content td {
+    border: 1px solid #ddd;
+    padding: 6px;
+    text-align: left;
+}
+.message-content th {
+    background-color: rgba(0, 0, 0, 0.05);
+    font-weight: bold;
+}
+.message-content tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
 }
