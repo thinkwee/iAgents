@@ -95,37 +95,43 @@ h2 {
     margin: 0;
     flex-grow: 1;
     overflow-y: auto;
-    border-radius: 8px;
     background-color: #fff;
 }
 
 .friend-list li {
-    padding: 12px 15px;
+    padding: 0;
     background-color: #ffffff;
-    margin-bottom: 8px;
     cursor: pointer;
     font-size: 16px;
-    border-radius: 6px;
     transition: all 0.3s ease;
     border-left: 4px solid transparent;
-    border-bottom: 1px solid #e0e0e0; /* Add a bottom border for separation */
+    border-bottom: 1px solid #e0e0e0; /* Add bottom border for divider */
+    display: flex;
+    align-items: center;
+    height: 44px;
+    box-sizing: border-box;
 }
 
 .friend-list li:last-child {
-    border-bottom: none; /* Remove border from last item */
-}
-
-.friend-list li:hover {
-    background-color: #e9ecef;
-    border-left-color: #06C05F;
+    border-bottom: none; /* Remove bottom border for last item */
 }
 
 .friend-list li a {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center text horizontally */
     color: #495057;
     text-decoration: none;
     width: 100%;
+    height: 100%;
     font-weight: 500;
+    padding: 0 15px; /* Add horizontal padding */
+}
+
+.friend-list li:hover,
+.friend-list li.selected {
+    background-color: #e9ecef;
+    border-left-color: #06C05F;
 }
 
 .friend-list input[type="text"]:focus {
@@ -713,4 +719,9 @@ input[type="text"][name="friend_name"] {
 
 .message-input input[type="submit"]:hover {
     background-color: #05a351;
+}
+
+.friend-list li.selected {
+    background-color: #e9ecef;
+    border-left-color: #06C05F;
 }

@@ -119,20 +119,18 @@
             </form>
         </div>
 
-        <div id="loading-indicator" style="display: none;">
-            <p style="text-align: center; font-style: italic;">Agent is processing your request...</p>
-        </div>
-
-        <div id="progress-container" style="display: none;">
-            <div id="progress-bar" style="width: 0%; height: 20px; background-color: #4caf50;"></div>
-        </div>
-
         <script>
             let previousChat = '';
+            // 存储滚动位置
+            let friendListScrollPosition = 0;
 
             function fetchMessages() {
                 const currentChat = document.getElementById('receiver').value;
                 if (currentChat) {
+                    // 保存当前滚动位置
+                    const friendList = document.querySelector('.friend-list ul');
+                    friendListScrollPosition = friendList.scrollTop;
+
                     fetch(`/get_messages?chat=${currentChat}`)
                         .then(response => {
                             if (!response.ok) {
@@ -237,6 +235,10 @@
                                 document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
                             }
                             previousChat = currentChat;
+                            // 更新选中状态
+                            updateSelectedFriend(currentChat);
+                            // 恢复滚动位置
+                            friendList.scrollTop = friendListScrollPosition;
                         })
                         .catch(error => console.error('Error fetching messages:', error));
                 }
@@ -295,7 +297,6 @@
 
                 if (sender + "'s Agent" == receiver) {
                     const origData = new FormData(document.getElementById('message-form'));
-                    document.getElementById('loading-indicator').style.display = 'block';
                     fetch('/execute_agent_cultivate?receiver=' + receiver + '&message=' + message + '&sender=' + sender)
                         .then(response => {
                             if (!response.ok) {
@@ -304,7 +305,6 @@
                             return response.json();
                         })
                         .then(data => {
-
                             origData.set('message', message);
                             origData.set('sender', sender);
                             origData.set('receiver', receiver);
@@ -321,7 +321,6 @@
                         .catch(error => console.error('Error executing agent:', error));
                 }
                 else if (message.startsWith('@')) {
-                    document.getElementById('loading-indicator').style.display = 'block';
                     fetch('/execute_agent?receiver=' + receiver + '&message=' + message + '&sender=' + sender)
                         .then(response => {
                             if (!response.ok) {
@@ -357,7 +356,6 @@
                         if (data.success) {
                             fetchMessages();
                             document.getElementById('message-input').value = '';
-                            document.getElementById('loading-indicator').style.display = 'none';
                         } else {
                             console.error('Error sending message:', data.error);
                         }
@@ -401,8 +399,6 @@
                 }).finally(() => {
                     location.reload();
                 });
-
-
             }
 
             // Elements
@@ -461,21 +457,7 @@
                 }
             });
 
-            function showProgressBar() {
-                document.getElementById('progress-container').style.display = 'block';
-                document.getElementById('progress-bar').style.width = '0%';
-            }
-
-            function updateProgressBar(percentage) {
-                document.getElementById('progress-bar').style.width = percentage + '%';
-            }
-
-            function hideProgressBar() {
-                document.getElementById('progress-container').style.display = 'none';
-            }
-
             function uploadFiles(files, url) {
-                showProgressBar();
                 const formData = new FormData();
                 for (let i = 0; i < files.length; i++) {
                     formData.append('files[]', files[i]);
@@ -487,21 +469,16 @@
                 }).then(response => {
                     if (response.ok) {
                         showToast('Files uploaded successfully', true);
-                        updateProgressBar(100);
-                        setTimeout(hideProgressBar, 2000);
                     } else {
                         showToast('File upload failed', false);
-                        hideProgressBar();
                     }
                 }).catch(error => {
                     console.error('Error:', error);
                     showToast('File upload failed', false);
-                    hideProgressBar();
                 });
             }
 
             function uploadURL(url, targetUrl) {
-                showProgressBar();
                 fetch(targetUrl, {
                     method: 'POST',
                     headers: {
@@ -511,16 +488,12 @@
                 }).then(response => {
                     if (response.ok) {
                         showToast('URL content uploaded successfully', true);
-                        updateProgressBar(100);
-                        setTimeout(hideProgressBar, 2000);
                     } else {
                         showToast('URL content upload failed', false);
-                        hideProgressBar();
                     }
                 }).catch(error => {
                     console.error('Error:', error);
                     showToast('URL content upload failed', false);
-                    hideProgressBar();
                 });
             }
 
@@ -696,8 +669,30 @@
                 }
             }
 
+            // 添加新函数来更新选中状态
+            function updateSelectedFriend(currentChat) {
+                const friendItems = document.querySelectorAll('.friend-list li');
+                friendItems.forEach(item => {
+                    if (item.textContent.trim() === currentChat) {
+                        item.classList.add('selected');
+                    } else {
+                        item.classList.remove('selected');
+                    }
+                });
+            }
 
-
+            // 修改现有的事件监听器，为好友列表项添加点击事件
+            document.addEventListener('DOMContentLoaded', function() {
+                const friendItems = document.querySelectorAll('.friend-list li a');
+                friendItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const friendName = this.textContent.trim();
+                        document.getElementById('receiver').value = friendName;
+                        fetchMessages();
+                    });
+                });
+            });
 
         </script>
     </div>
