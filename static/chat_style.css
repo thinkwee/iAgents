@@ -17,8 +17,9 @@ h2 {
     max-width: 2000px;
     margin: auto;
     padding: 20px;
-    height: calc(100vh - 40px);
-    align-items: flex-start;
+    height: calc(100vh - 40px); /* Change this line */
+    align-items: stretch; /* Change this line */
+    box-sizing: border-box; /* Add this line */
 }
 
 .friend-list {
@@ -27,7 +28,12 @@ h2 {
     margin-right: 20px;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 100%; /* Ensure full height */
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    overflow-y: auto; /* Add this line */
 }
 
 .friend-list .container {
@@ -37,35 +43,95 @@ h2 {
     overflow: hidden;
 }
 
+.friend-list h3 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #06C05F;
+    padding-bottom: 10px;
+}
+
+.friend-list form {
+    display: flex;
+    margin-top: 15px;
+    align-items: center; /* Change to center alignment */
+}
+
+.friend-list input[type="text"] {
+    flex-grow: 1;
+    padding: 0 15px; /* Remove vertical padding */
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    border-radius: 6px 0 0 6px;
+    transition: border-color 0.3s ease;
+    height: 38px; /* Reduce height slightly */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.friend-list input[type="submit"] {
+    padding: 0 15px; /* Remove vertical padding */
+    font-size: 14px;
+    height: 38px; /* Match the height of the input */
+    background-color: #06C05F;
+    color: #fff;
+    border: 1px solid #06C05F; /* Add a border to match the input */
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.friend-list input[type="submit"]:hover {
+    background-color: #05a351;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
 .friend-list ul {
     list-style-type: none;
     padding: 0;
-    margin: 10px 10px 0px 10px;
+    margin: 0;
     flex-grow: 1;
     overflow-y: auto;
-    border: 1px solid #dcdcdc;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
     background-color: #fff;
 }
 
 .friend-list li {
-    padding: 10px;
-    background-color: #f9f9f9;
-    margin-bottom: 5px;
+    padding: 12px 15px;
+    background-color: #ffffff;
+    margin-bottom: 8px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 16px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    border-bottom: 1px solid #e0e0e0; /* Add a bottom border for separation */
+}
+
+.friend-list li:last-child {
+    border-bottom: none; /* Remove border from last item */
+}
+
+.friend-list li:hover {
+    background-color: #e9ecef;
+    border-left-color: #06C05F;
 }
 
 .friend-list li a {
     display: block;
-    color: inherit;
+    color: #495057;
     text-decoration: none;
     width: 100%;
+    font-weight: 500;
 }
 
-.friend-list li:hover {
-    background-color: #e5e5e5;
+.friend-list input[type="text"]:focus {
+    outline: none;
+    border-color: #06C05F;
+    box-shadow: 0 0 0 2px rgba(6, 192, 95, 0.2);
 }
 
 .add-friend-form {
@@ -100,15 +166,14 @@ h2 {
 
 .chat-history-container {
     flex-grow: 1;
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensure full height */
     border: 1px solid #fff;
     padding: 20px;
     background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
     overflow: hidden;
 }
 
@@ -119,6 +184,7 @@ h2 {
     padding: 20px;
     background-color: #f2f2f2;
     border-radius: 12px;
+    margin-bottom: 20px; /* Add space between chat history and input */
 }
 
 .admin-panel-info {
@@ -256,21 +322,21 @@ h2 {
 
 .message-input {
     display: flex;
-    align-items: center;
-    margin-top: 20px;
+    align-items: stretch;
     padding: 10px;
     border-top: 1px solid #dcdcdc;
 }
 
 textarea[name="message"] {
     flex-grow: 1;
-    padding: 15px;
+    padding: 10px 15px;
     resize: none;
     font-size: 14px;
-    height: 60px;
-    border-radius: 8px;
+    height: 40px; /* Keep this height */
+    border-radius: 8px 0 0 8px;
     border: 1px solid #d1d5db;
     transition: border-color 0.3s ease;
+    box-sizing: border-box; /* Add this line */
 }
 
 textarea[name="message"]:focus {
@@ -278,49 +344,6 @@ textarea[name="message"]:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(6, 192, 95, 0.2);
 }
-
-.friend-list input[type="text"] {
-    padding: 10px;
-    height: 40px;
-    box-sizing: border-box;
-    font-size: 16px;
-    border-radius: 5px 0 0 5px;
-    border: 1px solid #dcdcdc;
-}
-
-
-.friend-list input[type="submit"] {
-    padding: 10px 20px;
-    height: 40px;
-    box-sizing: border-box;
-    background-color: #06C05F;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 0 5px 5px 0;
-    transition: background-color 0.3s ease;
-}
-
-input[type="submit"]:hover {
-    background-color: #038a44;
-    transition: background-color 0.3s;
-}
-
-input[type="submit"] {
-    padding: 15px 20px;
-    margin-left: 10px;
-    background-color: #06C05F;
-    color: #fff;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    height: 60px;
-}
-
-
-
 
 .feedback-buttons button {
     background: none;
@@ -670,4 +693,24 @@ input[type="text"][name="friend_name"] {
 
 .interactive-button:active {
   transform: scale(0.98);
+}
+
+/* Add these styles for the Send button */
+.message-input input[type="submit"] {
+    padding: 0 20px;
+    background-color: #06C05F;
+    color: #fff;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    height: 40px; /* Match the height of textarea (40px) + its top and bottom borders (1px each) */
+    line-height: 42px; /* Center text vertically */
+    box-sizing: border-box; /* Add this line */
+}
+
+.message-input input[type="submit"]:hover {
+    background-color: #05a351;
 }
