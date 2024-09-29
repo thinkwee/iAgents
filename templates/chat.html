@@ -24,20 +24,19 @@
 
 
                     <div class="change-avatar-buttons">
-                        <button id="change-avatar-button" class="change-avatar-button">😄 User Avatar 😄</button>
-                        <button id="change-agent-avatar-button" class="change-agent-avatar-button">🤖 Agent Avatar
-                            🤖</button>
-                        <button class="composite-button">
+                        <button id="change-avatar-button" class="change-avatar-button" title="Change the icon of yourself">😄 User Icon 😄</button>
+                        <button id="change-agent-avatar-button" class="change-agent-avatar-button" title="Change the icon of your agent">🤖 Agent Icon 🤖</button>
+                        <button class="composite-button interactive-button">
                             <div class="icon-container">
-                                <span id="upload-file-button" class="icon">📁</span>
+                                <span id="upload-file-button" class="icon" title="Upload file for agent to analyze">📁</span>
                             </div>
                             <div class="divider"></div>
                             <div class="icon-container">
-                                <span id="show-files-button" class="icon">🔍</span>
+                                <span id="show-files-button" class="icon" title="View files uploaded by you">🔍</span>
                             </div>
                             <div class="divider"></div>
                             <div class="icon-container">
-                                <span id="delete-files-button" class="icon">❌</span>
+                                <span id="delete-files-button" class="icon" title="Delete all files uploaded by you">❌</span>
                             </div>
                             <input type="file" id="file-input" multiple style="display: none;">
                         </button>
@@ -84,7 +83,7 @@
                 <input type="file" id="agent-avatar-file-input" style="display: none;" accept="image/*">
 
                 <div class="user-panel-container">
-                    <button id="agent-admin-panel-button" class="agent-admin-panel-button">Agent Admin Panel</button>
+                    <button id="agent-admin-panel-button" class="agent-admin-panel-button" title="Admin panel for customizing your agent">Agent Admin Panel</button>
                 </div>
 
 

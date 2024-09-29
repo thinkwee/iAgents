@@ -2,7 +2,7 @@ body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f7f7f7;
+    background-color: #f0f2f5;
 }
 
 h1,
@@ -94,8 +94,8 @@ h2 {
     padding: 10px;
     text-align: center;
     background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .chat-history-container {
@@ -105,7 +105,7 @@ h2 {
     padding: 20px;
     background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -118,7 +118,7 @@ h2 {
     border: 1px solid #fff;
     padding: 20px;
     background-color: #f2f2f2;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 .admin-panel-info {
@@ -172,7 +172,7 @@ h2 {
     max-width: 70%;
     padding: 12px;
     margin-bottom: 10px;
-    border-radius: 15px;
+    border-radius: 18px;
     word-wrap: break-word;
     white-space: pre-wrap;
     line-height: 1.5;
@@ -202,6 +202,8 @@ h2 {
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .sender-name {
@@ -266,8 +268,15 @@ textarea[name="message"] {
     resize: none;
     font-size: 14px;
     height: 60px;
-    border-radius: 5px;
-    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    transition: border-color 0.3s ease;
+}
+
+textarea[name="message"]:focus {
+    border-color: #06C05F;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(6, 192, 95, 0.2);
 }
 
 .friend-list input[type="text"] {
@@ -356,12 +365,14 @@ input[type="submit"] {
     background-color: #06C05F;
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     text-align: center;
     position: relative;
     overflow: hidden;
     width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
 }
 
 .icon-container {
@@ -382,6 +393,11 @@ input[type="submit"] {
 .icon {
     width: 100%;
     text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.icon:hover {
+    transform: scale(1.1);
 }
 
 .divider {
@@ -407,11 +423,13 @@ input[type="submit"] {
     background-color: #06C05F;
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     text-align: center;
     width: 160px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
 }
 
 .option-selection {
@@ -460,12 +478,14 @@ input[type="submit"] {
     background-color: #06C05F;
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     text-align: center;
     width: 200px;
     margin-top: 0px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
 }
 
 .agent-admin-panel-button:hover {
@@ -624,4 +644,30 @@ input[type="text"][name="friend_name"] {
 
 .modal-button:hover {
     background-color: #45a049;
+}
+
+.change-avatar-button,
+.change-agent-avatar-button,
+.agent-admin-panel-button,
+.composite-button,
+.icon-container {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.change-avatar-button:hover,
+.change-agent-avatar-button:hover,
+.agent-admin-panel-button:hover {
+  background-color: #058f47;
+}
+
+.icon-container:hover {
+  background-color: #058f47;
+}
+
+.interactive-button:hover {
+  transform: scale(1.02);
+}
+
+.interactive-button:active {
+  transform: scale(0.98);
 }
