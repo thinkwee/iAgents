@@ -7,147 +7,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login_style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            position: relative;
-            z-index: 1;
-            background: url("{{ url_for('static', filename='login_bg.png') }}") no-repeat center center fixed;
-            background-size: cover;
-            overflow: hidden;
-        }
-
-        body::before {  
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.2);
-            z-index: 0;
-        }
-
-        header {
-            position: relative;
-            z-index: 2;
-            background-color: #f5f5f5;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-title {
-            position: relative;
-            z-index: 3; /* Ensure it's above the mask */
-            display: block;
-            margin: 50px auto -80px;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 400px;
-            margin: 100px auto;
-            position: relative;
-            z-index: 2;
-        }
-
-        .character {
-            position: absolute;
-            width: 100px;  
-            height: 100px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            filter: brightness(90%);
-        }
-
-        .walk {
-            animation: walk 10s infinite linear;
-        }
-
-        .jump {
-            animation: jump 2s infinite;
-        }
-
-        .wave {
-            animation: wave 3s infinite;
-        }
-
-        .lie {
-            animation: lie 5s infinite;
-        }
-
-        @keyframes walk {
-            0% {
-                left: 0;
-            }
-            100% {
-                left: calc(100% - 50px);
-            }
-        }
-
-        @keyframes jump {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-30px);
-            }
-            60% {
-                transform: translateY(-15px);
-            }
-        }
-
-        @keyframes wave {
-            0%, 100% {
-                transform: rotate(0deg);
-            }
-            50% {
-                transform: rotate(20deg);
-            }
-        }
-
-        @keyframes lie {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(10px);
-            }
-        }
-
-        nav ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        nav ul li {
-            margin-left: 20px;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 
 <body>
@@ -162,27 +21,52 @@
 
     <img src="{{ url_for('static', filename='login_title.png') }}" alt="iAgents" width="400px" class="login-title">
 
-    <div class="container"> 
-        <h2>Login</h2>
-        <form method="post" action="/login">
-            <label for="username">Username:</label><br>
-            <input type="text" id="username" name="username" required><br><br>
-            <label for="password">Password:</label><br>
-            <input type="password" id="password" name="password" required><br><br>
+    <div class="container">
+        <div class="form-toggle">
+            <button id="loginToggle" class="active">Login</button>
+            <button id="registerToggle">Register</button>
+        </div>
+        
+        <form id="loginForm" method="post" action="/login">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
             <input type="submit" value="Login">
         </form>
 
-        <h2>Register</h2>
-        <form method="post" action="/register">
-            <label for="new_username">New Username:</label><br>
-            <input type="text" id="new_username" name="username" required><br><br>
-            <label for="new_password">New Password:</label><br>
-            <input type="password" id="new_password" name="password" required><br><br>
+        <form id="registerForm" method="post" action="/register" style="display: none;">
+            <label for="new_username">New Username:</label>
+            <input type="text" id="new_username" name="username" required>
+            <label for="new_password">New Password:</label>
+            <input type="password" id="new_password" name="password" required>
             <input type="submit" value="Register">
         </form>
     </div>
 
     <script>
+        const loginToggle = document.getElementById('loginToggle');
+        const registerToggle = document.getElementById('registerToggle');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const formToggle = document.querySelector('.form-toggle');
+
+        loginToggle.addEventListener('click', () => {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            loginToggle.classList.add('active');
+            registerToggle.classList.remove('active');
+            formToggle.classList.remove('register');
+        });
+
+        registerToggle.addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            registerToggle.classList.add('active');
+            loginToggle.classList.remove('active');
+            formToggle.classList.add('register');
+        });
+
         const characters = [
             { animation: 'bounce', image: "{{ url_for('static', filename='login_avatar1.png') }}" },
             { animation: 'bounce', image: "{{ url_for('static', filename='login_avatar2.png') }}" },
