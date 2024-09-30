@@ -27,7 +27,14 @@
             <button id="registerToggle">Register</button>
         </div>
         
-        <form id="loginForm" method="post" action="/login">
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form id="loginForm" method="POST" action="{{ url_for('login') }}" {% if show_register %}style="display: none;"{% endif %}>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Password:</label>
@@ -35,7 +42,8 @@
             <input type="submit" value="Login">
         </form>
 
-        <form id="registerForm" method="post" action="/register" style="display: none;">
+        <form id="registerForm" method="post" action="{{ url_for('register') }}" {% if not show_register %}style="display: none;"{% endif %}>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <label for="new_username">New Username:</label>
             <input type="text" id="new_username" name="username" required>
             <label for="new_password">New Password:</label>
@@ -118,6 +126,20 @@
                     tl.to(character, { scaleX: 1.25, scaleY: 0.75, duration: 0.5, ease: "power1.inOut" })
                       .to(character, { scaleX: 1, scaleY: 1, duration: 0.5, ease: "power1.inOut" });
                     break;
+            }
+        });
+
+        // Page load check for displaying the register form
+        document.addEventListener('DOMContentLoaded', function() {
+            var showRegister = {% if show_register is defined %}{{ show_register|tojson }}{% else %}false{% endif %};
+            var hasError = {% if error %}true{% else %}false{% endif %};
+
+            if (hasError && showRegister) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+                document.getElementById('registerToggle').classList.add('active');
+                document.getElementById('loginToggle').classList.remove('active');
+                document.querySelector('.form-toggle').classList.add('register');
             }
         });
     </script>

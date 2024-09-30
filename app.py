@@ -4,6 +4,8 @@ from datetime import datetime
 import yaml
 from flask import Flask, render_template, request, redirect, session, jsonify, send_from_directory, url_for
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_wtf.csrf import CSRFProtect
 from pypinyin import lazy_pinyin
 
 from iagents.sql import *
@@ -31,8 +33,13 @@ except yaml.YAMLError as e:
     raise Exception(f"Error parsing YAML file: {config_path}\n{e}")
 
 # Flask app setup
+from flask_wtf.csrf import CSRFProtect
+
 app = Flask(__name__)
 app.secret_key = global_config.get("website", {}).get("flask_secret", "default_secret")
+csrf = CSRFProtect(app)
+app.secret_key = global_config.get("website", {}).get("flask_secret", "default_secret")
+csrf = CSRFProtect(app)
 
 # Setup logging
 current_timestamp = datetime.now().timestamp()
@@ -52,7 +59,13 @@ logging.basicConfig(filename=os.path.join(project_path, "logs", f"{logname}_{tim
 
 def get_profile_image_url(name):
     """
-    get user profile image url based on user name
+    Get user profile image URL based on user name.
+
+    Args:
+        name (str): The name of the user or agent.
+
+    Returns:
+        str: The URL of the profile image.
     """
     if name.endswith("'s Agent"):
         user_name = name.replace("'s Agent", "")
@@ -69,39 +82,67 @@ def get_profile_image_url(name):
             return url_for('static', filename='default.png', _external=True)
 
 
-# Helper functions
 def hash_password(password):
-    # TODO: Implement password hashing
-    return password
+    """
+    Hash a password for storing.
+
+    Args:
+        password (str): The password to hash.
+
+    Returns:
+        str: The hashed password.
+    """
+    return generate_password_hash(password)
 
 
 def verify_password(stored_password, provided_password):
-    # TODO: Implement password verification
-    return stored_password == provided_password
+    """
+    Verify a stored password against one provided by user.
+
+    Args:
+        stored_password (str): The stored hashed password.
+        provided_password (str): The password provided by the user.
+
+    Returns:
+        bool: True if the password matches, False otherwise.
+    """
+    return check_password_hash(stored_password, provided_password) or stored_password == provided_password
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+    Handle user registration.
+
+    Returns:
+        str: Rendered HTML template or redirect response.
+    """
     if request.method == 'POST':
         name = str(request.form['username'])
         password = str(request.form['password'])
-        hashed_password = hash_password(password)  # Password hashing
+        hashed_password = hash_password(password)
 
         try:
             exec_sql("INSERT INTO users (name, password) VALUES (%s, %s)",
                      params=(name, hashed_password),
                      mode="write")
-            return redirect('/login')
+            return redirect(url_for('login'))
         except mysql.connector.IntegrityError:
-            return 'Username already exists. Please choose a different one.'
+            return render_template('login.html', error='Username already exists. Please choose a different one.')
         except Exception as e:
-            logging.error(f"Error occurred: {e}")
-            return 'An error occurred. Please try again later.'
-    return render_template('register.html')
+            logging.error(f"Error occurred during registration: {e}")
+            return render_template('login.html', error='Username invalid or exists, Please try again.', show_register=True)
+    return render_template('login.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Handle user login.
+
+    Returns:
+        str: Rendered HTML template or redirect response.
+    """
     if request.method == 'POST':
         name = str(request.form['username'])
         password = str(request.form['password'])
@@ -112,11 +153,11 @@ def login():
             if verify_password(stored_password, password):
                 session['name'] = name
                 session['user_id'] = user_id
-                return redirect('/chat')
+                return redirect(url_for('chat_page'))
             else:
-                return 'Invalid username or password'
+                return render_template('login.html', error='Invalid username or password')
         else:
-            return 'Invalid username or password'
+            return render_template('login.html', error='Invalid username or password')
     return render_template('login.html')
 
 
@@ -249,6 +290,12 @@ def upload_avatar():
 
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
+    """
+    Handle file upload for a user.
+
+    Returns:
+        flask.Response: JSON response indicating success or failure.
+    """
     if 'name' not in session:
         return redirect('/login')
 
@@ -263,8 +310,9 @@ def upload_file():
             return jsonify({'error': 'No URL provided'}), 400
         
         modified_url = f"https://r.jina.ai/{url}"
-        response = requests.get(modified_url)
-        if response.status_code == 200:
+        try:
+            response = requests.get(modified_url, timeout=10)
+            response.raise_for_status()
             content = response.text
             filename = secure_filename(url + '.txt')
             file_path = os.path.join(user_directory, filename)
@@ -272,7 +320,8 @@ def upload_file():
                 file.write(content)
             llama_indexer.update_index_with_new_files([file_path])
             return jsonify({'message': 'URL content uploaded successfully'}), 200
-        else:
+        except requests.RequestException as e:
+            logging.error(f"Error fetching URL content: {e}")
             return jsonify({'error': 'Failed to fetch URL content'}), 500
 
     if 'files[]' not in request.files:

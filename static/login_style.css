@@ -302,3 +302,9 @@ h2 {
         padding: 8px;
     }
 }
+
+.error-message {
+    color: red;
+    margin-bottom: 10px;
+    text-align: center;
+}
