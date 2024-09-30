@@ -163,6 +163,7 @@ def login():
 
 
 @app.route('/add_friend', methods=['POST'])
+@csrf.exempt
 def add_friend():
     if 'name' not in session:
         return redirect('/login')
@@ -202,6 +203,7 @@ def send_feedback():
 
 
 @app.route('/get_messages')
+@csrf.exempt
 def get_messages():
     if 'name' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -237,6 +239,7 @@ def get_messages():
 
 
 @app.route('/send_message', methods=['POST'])
+@csrf.exempt
 def send_message():
     if 'name' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -262,6 +265,7 @@ csrf.exempt(send_message)  # Add this line to exempt the send_message route from
 
 
 @app.route('/upload_avatar', methods=['POST'])
+@csrf.exempt
 def upload_avatar():
     if 'name' not in session:
         return redirect('/login')
@@ -294,6 +298,7 @@ def upload_avatar():
 
 
 @app.route('/upload_file', methods=['POST'])
+@csrf.exempt
 def upload_file():
     """
     Handle file upload for a user.
@@ -352,6 +357,7 @@ def upload_file():
     return jsonify({'error': 'File upload failed'}), 500
 
 @app.route('/delete_all_files', methods=['POST'])
+@csrf.exempt
 def delete_all_files():
     user_directory = os.path.join(app.root_path, 'userfiles', session['name'])
     try:
@@ -378,6 +384,7 @@ def get_uploaded_files(directory_path):
 
 # Endpoint to fetch uploaded files
 @app.route('/get_uploaded_files', methods=['GET'])
+@csrf.exempt
 def fetch_uploaded_files():
     directory_path = os.path.join(app.root_path, 'userfiles', session['name'])
     uploaded_files = get_uploaded_files(directory_path)
@@ -385,6 +392,7 @@ def fetch_uploaded_files():
 
 
 @app.route('/upload_agent_avatar', methods=['POST'])
+@csrf.exempt
 def upload_agent_avatar():
     if 'name' not in session:
         return redirect('/login')
@@ -436,6 +444,7 @@ def index():
 from pypinyin import lazy_pinyin
 
 @app.route('/chat')
+@csrf.exempt
 def chat_page():
     if 'name' not in session:
         return redirect('/login')
@@ -460,11 +469,13 @@ def chat_page():
 
 
 @app.route('/static/<path:path>')
+@csrf.exempt
 def send_static(path):
     return send_from_directory('static', path)
 
 
 @app.route('/execute_agent')
+@csrf.exempt
 def execute_agent():
     if 'name' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -486,6 +497,7 @@ def execute_agent():
         return jsonify({'error': 'No chat receiver specified'}), 400
 
 @app.route('/execute_agent_cultivate')
+@csrf.exempt
 def execute_agent_cultivate():
     if 'name' not in session:
         return jsonify({'error': 'Unauthorized'}), 401

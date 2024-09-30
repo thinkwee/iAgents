@@ -118,11 +118,11 @@ class VanillaCommunication(BaseCommunication):
             iAgentsLogger.log(instruction="[Comm Round: {}]".format(round_index))
             round_index += 1
 
-            if round_index == 1:
+            # if round_index == 1:
                 # add the task prompt at the start of agent's communication
-                self.send_message_agent(self.instructor, 
-                                        self.assistant,
-                                        "[Trigger Agents Communication for Task Solving, Task Prompt]: " + self.task)
+                # self.send_message_agent(self.instructor, 
+                #                         self.assistant,
+                #                         "[Trigger Agents Communication for Task Solving, Task Prompt]: " + self.task)
 
             # instructor sends message to assistant
             instructor_response = self.instructor.query(self.assistant.master, 
@@ -268,9 +268,9 @@ class MultiPartyCommunication(VanillaCommunication):
 
             if round_index == 1:
                 # add the task prompt at the start of agent's communication
-                self.send_message_agent(
-                    self.instructor, self.assistant,
-                    "[Trigger Agents Communication for Task Solving, Task Prompt]: " + self.task)
+                # self.send_message_agent(
+                #     self.instructor, self.assistant,
+                #     "[Trigger Agents Communication for Task Solving, Task Prompt]: " + self.task)
 
                 # instructor starts the new communication
                 chosen_friend_instructor, new_comm_instructor_conclusion = self.raise_new_comm(

@@ -136,7 +136,7 @@
                 return renderMarkdownWithTables(marked.parse(message));
             }
 
-
+            let isAgentThinking = false;
 
             function fetchMessages() {
                 const currentChat = document.getElementById('receiver').value;
@@ -154,6 +154,10 @@
                         })
                         .then(data => {
                             const messageList = document.getElementById('message-list');
+                            if (!isAgentThinking) {
+                                removeThinkingMessages();
+                            }
+
                             messageList.innerHTML = '';
                             data.messages.forEach(message => {
                                 const li = document.createElement('li');
@@ -276,6 +280,14 @@
                                 }
                             });
 
+                            if (isAgentThinking && data.messages.length > 0 && data.messages[data.messages.length - 1].sender.endsWith("'s Agent")) {
+                                const lastMessage = data.messages[data.messages.length - 1];
+                                const otherAgent = lastMessage.sender === "{{ session['name'] }}'s Agent" 
+                                    ? currentChat + "'s Agent" 
+                                    : "{{ session['name'] }}'s Agent";
+                                showThinkingMessage(otherAgent);
+                            }
+
                             if (currentChat !== previousChat) {
                                 document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
                             }
@@ -369,6 +381,8 @@
                         .catch(error => console.error('Error executing agent:', error));
                 }
                 else if (message.startsWith('@')) {
+                    isAgentThinking = true;
+                    showThinkingMessage(sender + "'s Agent");
                     fetch('/execute_agent?receiver=' + receiver + '&message=' + message + '&sender=' + sender)
                         .then(response => {
                             if (!response.ok) {
@@ -382,8 +396,14 @@
                             formData.set('communication_history', data.communication_history);
 
                             sendMessageNow(formData);
+                            isAgentThinking = false;
+                            removeThinkingMessages();
                         })
-                        .catch(error => console.error('Error executing agent:', error));
+                        .catch(error => {
+                            console.error('Error executing agent:', error);
+                            isAgentThinking = false;
+                            removeThinkingMessages();
+                        });
                 } else {
                     sendMessageNow(formData);
                 }
@@ -431,6 +451,50 @@
                     for (let pair of formData.entries()) {
                         console.log(pair[0] + ': ' + pair[1]);
                     }
+                });
+            }
+
+            function showThinkingMessage(agentName) {
+                const messageList = document.getElementById('message-list');
+                const thinkingLi = document.createElement('li');
+                thinkingLi.className = 'thinking-container';
+                
+                const thinkingBox = document.createElement('div');
+                thinkingBox.className = 'thinking-box ' + (agentName.includes("{{ session['name'] }}") ? 'agent_sent_bubble' : 'agent_receive_bubble');
+                
+                const thinkingText = document.createElement('span');
+                thinkingText.textContent = agentName + ' is thinking';
+                
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'ellipsis';
+                ellipsis.textContent = '...';
+                
+                thinkingBox.appendChild(thinkingText);
+                thinkingBox.appendChild(ellipsis);
+                
+                thinkingLi.appendChild(thinkingBox);
+                messageList.appendChild(thinkingLi);
+                
+                document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+
+                // Animate ellipsis
+                let dots = 0;
+                const animateEllipsis = setInterval(() => {
+                    dots = (dots + 1) % 4;
+                    ellipsis.textContent = '.'.repeat(dots);
+                }, 500);
+
+                // Store the interval ID on the element to clear it later
+                thinkingLi.dataset.animationInterval = animateEllipsis;
+            }
+
+            function removeThinkingMessages() {
+                const messageList = document.getElementById('message-list');
+                const thinkingMessages = messageList.querySelectorAll('.thinking-container');
+                thinkingMessages.forEach(msg => {
+                    // Clear the animation interval
+                    clearInterval(parseInt(msg.dataset.animationInterval));
+                    msg.remove();
                 });
             }
 
@@ -797,6 +861,28 @@
             }
 
         </script>
+
+        <style>
+            /* Add this to your existing styles */
+            .thinking-container {
+                display: flex;
+                justify-content: center;
+                margin: 10px 0;
+            }
+
+            .thinking-box {
+                padding: 5px 15px;
+                border-radius: 15px;
+                font-style: italic;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+
+            .ellipsis {
+                display: inline-block;
+                width: 20px;
+                text-align: left;
+            }
+        </style>
     </div>
 </body>
 
