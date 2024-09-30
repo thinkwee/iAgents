@@ -12,7 +12,7 @@ from iagents.sql import *
 from iagents.mode import Mode
 from iagents.util import iAgentsLogger
 from iagents.llamaindex import LlamaIndexer
-import markdown
+from flask_wtf.csrf import generate_csrf
 import shutil
 import requests
 
@@ -36,8 +36,6 @@ except yaml.YAMLError as e:
 from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
-app.secret_key = global_config.get("website", {}).get("flask_secret", "default_secret")
-csrf = CSRFProtect(app)
 app.secret_key = global_config.get("website", {}).get("flask_secret", "default_secret")
 csrf = CSRFProtect(app)
 
@@ -110,6 +108,7 @@ def verify_password(stored_password, provided_password):
 
 
 @app.route('/register', methods=['GET', 'POST'])
+@csrf.exempt
 def register():
     """
     Handle user registration.
@@ -136,6 +135,7 @@ def register():
 
 
 @app.route('/login', methods=['GET', 'POST'])
+@csrf.exempt
 def login():
     """
     Handle user login.
@@ -219,7 +219,7 @@ def get_messages():
             'sender': sender,
             'receiver': receiver,
             'raw_message': message,
-            'message': markdown.markdown(message) if len(markdown.markdown(message)) > 0 else message,
+            'message': message,  # 不再使用 markdown.markdown()
             'timestamp': timestamp,
             'communication_history': communication_history,
             'sender_profile_image_url': get_profile_image_url(sender),
@@ -245,15 +245,15 @@ def send_message():
     else:
         communication_history = ''
     if receiver and message:
-        message_html = markdown.markdown(message)
         _ = exec_sql(
             "INSERT INTO chats (sender, receiver, message, communication_history) VALUES (%s, %s, %s, %s)",
-            params=(sender, receiver, message_html, communication_history),
+            params=(sender, receiver, message, communication_history),
             mode="write")
 
         return jsonify({'success': True}), 200
     else:
         return jsonify({'error': 'Receiver and message are required'}), 400
+csrf.exempt(send_message)  # Add this line to exempt the send_message route from CSRF protection
 
 
 @app.route('/upload_avatar', methods=['POST'])
@@ -444,7 +444,8 @@ def chat_page():
     return render_template('chat.html',
                            friend_list=friend_list,
                            friend_name=friend_name,
-                           current_user_avatar_path=current_user_avatar_path)
+                           current_user_avatar_path=current_user_avatar_path,
+                           csrf_token=generate_csrf())
 
 
 @app.route('/static/<path:path>')

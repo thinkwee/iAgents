@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <script>
     marked.use({
       extensions: [{
@@ -162,6 +163,10 @@
             // 存储滚动位置
             let friendListScrollPosition = 0;
 
+            function renderMessage(message) {
+                return renderMarkdownWithTables(marked.parse(message));
+            }
+
             function fetchMessages() {
                 const currentChat = document.getElementById('receiver').value;
                 if (currentChat) {
@@ -222,7 +227,7 @@
 
 
                                 const messageContent = document.createElement('div');
-                                messageContent.innerHTML = renderMarkdownWithTables(message.message);
+                                messageContent.innerHTML = renderMessage(message.message);
                                 messageContent.classList.add('message-content');
                                 messageContent.classList.add(bubbleClass);
 
@@ -367,7 +372,7 @@
                             return response.json();
                         })
                         .then(data => {
-                            formData.set('message', "[Conclusion on Agents' Communication ]: \n" + data.agent_response);
+                            formData.set('message', "**Conclusion on Agents' Communication:**\n" + data.agent_response);
                             formData.set('sender', sender + "'s Agent");
                             formData.set('communication_history', data.communication_history);
 
@@ -380,25 +385,48 @@
             }
 
             function sendMessageNow(formData) {
+                // Remove CSRF token from formData
+                // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                // formData.append('csrf_token', csrfToken);
+
                 fetch('/send_message', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    // Remove CSRF token from headers
+                    // headers: {
+                    //     'X-CSRFToken': csrfToken
+                    // }
                 })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to send message');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            fetchMessages();
-                            document.getElementById('message-input').value = '';
-                        } else {
-                            console.error('Error sending message:', data.error);
-                        }
-                    })
-                    .catch(error => console.error('Error sending message:', error));
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('Message sent successfully');
+                        fetchMessages();
+                        document.getElementById('message-input').value = '';
+                    } else {
+                        console.error('Error sending message:', data.error);
+                        console.log('Full response:', data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending message:', error);
+                    console.log('Error details:', {
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
+                    });
+                    console.log('FormData contents:');
+                    for (let pair of formData.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]);
+                    }
+                });
             }
 
             document.getElementById('message-input').addEventListener('keydown', function (event) {
@@ -685,7 +713,7 @@
                                 senderInfo.appendChild(senderName);
 
                                 const messageContent = document.createElement('div');
-                                messageContent.innerHTML = marked.parse(message.message);
+                                messageContent.innerHTML = renderMessage(message.message);
                                 messageContent.classList.add('message-content');
                                 messageContent.classList.add(bubbleClass);
 
