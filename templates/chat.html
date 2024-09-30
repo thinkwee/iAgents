@@ -122,6 +122,9 @@
         </div>
 
         <script>
+            // 使用 localStorage 初始化 feedbackState
+            let feedbackState = JSON.parse(localStorage.getItem('feedbackState')) || {};
+
             let previousChat = '';
             // 存储滚动位置
             let friendListScrollPosition = 0;
@@ -211,32 +214,63 @@
                                 li.appendChild(messageContainer);
                                 messageList.appendChild(li);
 
-                                if (message.raw_message.includes('[Conclusion on Agents\' Communication ]:')) {
-
+                                if (message.raw_message.includes('Conclusion on Agents\' Communication')) {
                                     const feedbackLi = document.createElement('li');
-                                    feedbackLi.className = message.sender.startsWith('{{ session["name"] }}') ? 'feedback_bubble_sent' : 'feedback_bubble_recv';
-                                    feedbackLi.innerHTML = `<strong><span>Rate this agents' communication</span></strong>`;
+                                    feedbackLi.className = 'feedback-container';
+                                    
+                                    const feedbackKey = `${message.sender}-${message.timestamp}`;
+                                    const existingFeedback = feedbackState[feedbackKey];
+                                    
+                                    let feedbackContent;
+                                    if (existingFeedback) {
+                                        const feedbackClass = existingFeedback === 'good' ? 'feedback-good' : 'feedback-bad';
+                                        const feedbackEmoji = existingFeedback === 'good' ? '👍' : '👎';
+                                        feedbackContent = `
+                                            <div class="feedback-box feedback-sent ${feedbackClass}">
+                                                <p><strong>Your feedback: ${feedbackEmoji}</strong></p>
+                                            </div>
+                                        `;
+                                    } else {
+                                        feedbackContent = `
+                                            <div class="feedback-box">
+                                                <p><strong>Rate this agents' communication</strong></p>
+                                                <div class="feedback-buttons">
+                                                    <button class="feedback-btn like-btn" data-feedback="good">👍</button>
+                                                    <button class="feedback-btn dislike-btn" data-feedback="bad">👎</button>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }
+                                    
+                                    feedbackLi.innerHTML = feedbackContent;
+                                    
+                                    if (!existingFeedback) {
+                                        const likeButton = feedbackLi.querySelector('.like-btn');
+                                        const dislikeButton = feedbackLi.querySelector('.dislike-btn');
+                                        
+                                        [likeButton, dislikeButton].forEach(button => {
+                                            button.addEventListener('click', function() {
+                                                const feedback = this.dataset.feedback;
+                                                sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, feedback);
+                                                this.classList.add('clicked');
+                                                this.disabled = true;
+                                                
+                                                const otherButton = this === likeButton ? dislikeButton : likeButton;
+                                                otherButton.disabled = true;
+                                                
+                                                const feedbackBox = feedbackLi.querySelector('.feedback-box');
+                                                feedbackBox.classList.add('feedback-sent');
+                                                feedbackBox.classList.add(feedback === 'good' ? 'feedback-good' : 'feedback-bad');
+                                                
+                                                // Store the feedback state and update localStorage
+                                                feedbackState[feedbackKey] = feedback;
+                                                localStorage.setItem('feedbackState', JSON.stringify(feedbackState));
 
-
-                                    const feedbackDiv = document.createElement('div');
-                                    feedbackDiv.className = 'feedback-buttons';
-
-                                    const likeButton = document.createElement('button');
-                                    likeButton.textContent = '👍';
-                                    likeButton.addEventListener('click', function () {
-                                        sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, 'good');
-                                    });
-
-                                    const dislikeButton = document.createElement('button');
-                                    dislikeButton.textContent = '👎';
-                                    dislikeButton.addEventListener('click', function () {
-                                        sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, 'bad');
-                                    });
-
-                                    feedbackDiv.appendChild(likeButton);
-                                    feedbackDiv.appendChild(dislikeButton);
-
-                                    feedbackLi.appendChild(feedbackDiv);
+                                                // Update the content to show the submitted feedback
+                                                feedbackBox.innerHTML = `<p><strong>Your feedback: ${feedback === 'good' ? '👍' : '👎'}</strong></p>`;
+                                            });
+                                        });
+                                    }
 
                                     messageList.appendChild(feedbackLi);
                                 }
@@ -256,13 +290,13 @@
             }
 
             function sendFeedback(conclusion, communication_history, sender, receiver, feedback) {
-                var conclusion = decodeURIComponent(conclusion);
-                var communication_history = decodeURIComponent(communication_history);
+                var conclusion = encodeURIComponent(conclusion);
+                var communication_history = encodeURIComponent(communication_history);
 
                 fetch('/send_feedback', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         conclusion: conclusion,
@@ -272,17 +306,20 @@
                         communication_history: communication_history
                     })
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            console.log('Feedback sent successfully');
-                        } else {
-                            console.error('Error sending feedback:', data.error);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error sending feedback:', error);
-                    });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Feedback sent successfully');
+                        showToast('Feedback sent successfully', true);  // 添加成功提示
+                    } else {
+                        console.error('Error sending feedback:', data.error);
+                        showToast('Error sending feedback', false);  // 添加错误提示
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending feedback:', error);
+                    showToast('Error sending feedback', false);  // 添加错误提示
+                });
             }
 
             fetchMessages();

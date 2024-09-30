@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf.csrf import CSRFProtect
 from pypinyin import lazy_pinyin
+from urllib.parse import unquote
 
 from iagents.sql import *
 from iagents.mode import Mode
@@ -180,20 +181,24 @@ def add_friend():
 
 
 @app.route('/send_feedback', methods=['POST'])
+@csrf.exempt
 def send_feedback():
     data = request.get_json()
-    conclusion = data.get('conclusion')
+    conclusion = unquote(data.get('conclusion', ''))
     feedback = data.get('feedback')
-    communication_history = data.get('communication_history')
+    communication_history = unquote(data.get('communication_history', ''))
     sender = data.get('sender')
     receiver = data.get('receiver')
 
-    exec_sql(
-        "INSERT INTO feedback (sender, receiver, conclusion, communication_history, feedback) VALUES (%s, %s, %s, %s, %s)",
-        params=(sender, receiver, conclusion, communication_history, feedback),
-        mode="write")
-
-    return jsonify({'success': True})
+    try:
+        exec_sql(
+            "INSERT INTO feedback (sender, receiver, conclusion, communication_history, feedback) VALUES (%s, %s, %s, %s, %s)",
+            params=(sender, receiver, conclusion, communication_history, feedback),
+            mode="write")
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Error inserting feedback: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/get_messages')

@@ -318,10 +318,56 @@ h2 {
     word-wrap: break-word;
     white-space: pre-wrap;
     display: flex;
+    flex-direction: column;
     align-items: center;
     line-height: 1.5;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border: 1px solid #dcdcdc;
+    background-color: #f8f9fa;
+}
+
+.feedback_bubble_sent {
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.feedback_bubble_recv {
+    align-self: flex-start;
+    margin-right: auto;
+}
+
+.feedback_bubble_sent strong,
+.feedback_bubble_recv strong {
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+.feedback-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.feedback-buttons button {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: transform 0.3s, opacity 0.3s;
+    opacity: 0.7;
+}
+
+.feedback-buttons button:hover {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+.feedback-buttons button.clicked {
+    color: #06C05F;
+    cursor: default;
+    transform: scale(1);
+    opacity: 1;
 }
 
 .message-input {
@@ -349,25 +395,6 @@ textarea[name="message"]:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(6, 192, 95, 0.2);
 }
-
-.feedback-buttons button {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: transform 0.3s, background-color 0.3s;
-}
-
-.feedback-buttons button:hover {
-    transform: scale(1.2);
-}
-
-.feedback-buttons button.clicked {
-    color: gray;
-    cursor: default;
-    transform: scale(1);
-}
-
 
 .user-avatar-container {
     display: flex;
@@ -816,4 +843,66 @@ input[type="text"][name="friend_name"] {
 }
 .message-content tr:nth-child(even) {
     background-color: rgba(0, 0, 0, 0.02);
+}
+
+.feedback-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.feedback-box {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    padding: 10px 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.feedback-sent {
+    border: 1px solid;
+}
+
+.feedback-good {
+    background-color: #e6f7ff;
+    border-color: #91d5ff;
+    color: #096dd9;
+}
+
+.feedback-bad {
+    background-color: #fff1f0;
+    border-color: #ffa39e;
+    color: #cf1322;
+}
+
+.feedback-box p {
+    margin-bottom: 10px;
+}
+
+.feedback-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.feedback-btn {
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.feedback-btn:hover {
+    transform: scale(1.2);
+}
+
+.feedback-btn.clicked {
+    opacity: 1;
+}
+
+.feedback-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
