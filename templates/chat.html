@@ -137,6 +137,7 @@
             }
 
             let isAgentThinking = false;
+            let thinkingAgentName = '';
 
             function fetchMessages() {
                 const currentChat = document.getElementById('receiver').value;
@@ -154,10 +155,6 @@
                         })
                         .then(data => {
                             const messageList = document.getElementById('message-list');
-                            if (!isAgentThinking) {
-                                removeThinkingMessages();
-                            }
-
                             messageList.innerHTML = '';
                             data.messages.forEach(message => {
                                 const li = document.createElement('li');
@@ -280,12 +277,30 @@
                                 }
                             });
 
-                            if (isAgentThinking && data.messages.length > 0 && data.messages[data.messages.length - 1].sender.endsWith("'s Agent")) {
-                                const lastMessage = data.messages[data.messages.length - 1];
-                                const otherAgent = lastMessage.sender === "{{ session['name'] }}'s Agent" 
-                                    ? currentChat + "'s Agent" 
-                                    : "{{ session['name'] }}'s Agent";
-                                showThinkingMessage(otherAgent);
+                            // Check if we need to show or keep the thinking message
+                            if (isAgentThinking) {
+                                // 找到最后一条非结论消息
+                                let lastNonConclusionMessage = null;
+                                for (let i = data.messages.length - 1; i >= 0; i--) {
+                                    if (!data.messages[i].message.includes("Conclusion on Agents\' Communication")) {
+                                        lastNonConclusionMessage = data.messages[i];
+                                        break;
+                                    }
+                                }
+
+                                if (lastNonConclusionMessage) {
+                                    console.log("Last non-conclusion message:", lastNonConclusionMessage);
+                                    const otherAgent = lastNonConclusionMessage.sender === "{{ session['name'] }}'s Agent" 
+                                        ? currentChat + "'s Agent" 
+                                        : "{{ session['name'] }}'s Agent";
+                                    console.log("Showing thinking message for:", otherAgent);
+                                    showThinkingMessage(otherAgent);
+                                } else {
+                                    console.log("No suitable message found to determine thinking agent");
+                                    isAgentThinking = false; // 重置状态，因为没有合适的消息来决定谁在思考
+                                }
+                            } else {
+                                console.log("Agent is not thinking");
                             }
 
                             if (currentChat !== previousChat) {
@@ -382,7 +397,8 @@
                 }
                 else if (message.startsWith('@')) {
                     isAgentThinking = true;
-                    showThinkingMessage(sender + "'s Agent");
+                    thinkingAgentName = sender + "'s Agent";
+                    showThinkingMessage(thinkingAgentName);
                     fetch('/execute_agent?receiver=' + receiver + '&message=' + message + '&sender=' + sender)
                         .then(response => {
                             if (!response.ok) {
@@ -397,11 +413,13 @@
 
                             sendMessageNow(formData);
                             isAgentThinking = false;
-                            removeThinkingMessages();
+                            thinkingAgentName = '';
+                            fetchMessages(); // Fetch messages again to update the view
                         })
                         .catch(error => {
                             console.error('Error executing agent:', error);
                             isAgentThinking = false;
+                            thinkingAgentName = '';
                             removeThinkingMessages();
                         });
                 } else {
@@ -455,6 +473,7 @@
             }
 
             function showThinkingMessage(agentName) {
+                removeThinkingMessages(); // Remove any existing thinking messages
                 const messageList = document.getElementById('message-list');
                 const thinkingLi = document.createElement('li');
                 thinkingLi.className = 'thinking-container';

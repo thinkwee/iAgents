@@ -129,9 +129,9 @@ class Mode():
                     is_consensus_conclusion=True)
 
         # print the rewritten task
-        if self.rewrite_prompt:
-            comm.send_message_agent(
-                comm.instructor, comm.assistant,
-                "[rewrite task prompt]: from '{}' --> '{}'".format(self.raw_task, self.task))
+        # if self.rewrite_prompt:
+        #     comm.send_message_agent(
+        #         comm.instructor, comm.assistant,
+        #         "[rewrite task prompt]: from '{}' --> '{}'".format(self.raw_task, self.task))
 
         return comm

@@ -233,6 +233,8 @@ def get_messages():
             'receiver_profile_image_url': get_profile_image_url(receiver)
         } for sender, receiver, message, communication_history, timestamp in chat_history]
 
+        # print([message for sender, receiver, message, communication_history, timestamp in chat_history])
+
         return jsonify({'messages': messages}), 200
     else:
         return jsonify({'error': 'No chat specified'}), 400
