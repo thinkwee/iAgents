@@ -9,43 +9,6 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token }}">
-    <script>
-    marked.use({
-      extensions: [{
-        name: 'table',
-        level: 'block',
-        start(src) { return src.match(/^\s*\|/)?.index; },
-        tokenizer(src, tokens) {
-          const match = src.match(/^\s*\|(.+)\n\s*\|(?:[-:]+[-| :]*)\n((?:\s*\|.*(?:\n|$))*)\s*$/);
-          if (match) {
-            return {
-              type: 'table',
-              raw: match[0],
-              header: match[1].trim().split('|').map(s => s.trim()),
-              align: match[2].trim().split('|').map(s => s.trim().match(/^ *:-+: *$/) ? 'center' : s.trim().match(/^ *:-+ *$/) ? 'left' : s.trim().match(/^ *-+: *$/) ? 'right' : null),
-              cells: match[3].trim().split('\n').map(row => row.trim().split('|').map(s => s.trim()))
-            };
-          }
-        },
-        renderer(token) {
-          let html = '<table>\n<thead>\n<tr>\n';
-          for (let i = 0; i < token.header.length; i++) {
-            html += `<th${token.align[i] ? ` align="${token.align[i]}"` : ''}>${marked.parseInline(token.header[i])}</th>\n`;
-          }
-          html += '</tr>\n</thead>\n<tbody>\n';
-          for (const row of token.cells) {
-            html += '<tr>\n';
-            for (let i = 0; i < row.length; i++) {
-              html += `<td${token.align[i] ? ` align="${token.align[i]}"` : ''}>${marked.parseInline(row[i])}</td>\n`;
-            }
-            html += '</tr>\n';
-          }
-          html += '</tbody>\n</table>\n';
-          return html;
-        }
-      }]
-    });
-    </script>
 </head>
 
 <body>
@@ -164,8 +127,13 @@
             let friendListScrollPosition = 0;
 
             function renderMessage(message) {
+                if (typeof message !== 'string') {
+                    throw new Error('Expected a string');
+                }
                 return renderMarkdownWithTables(marked.parse(message));
             }
+
+
 
             function fetchMessages() {
                 const currentChat = document.getElementById('receiver').value;

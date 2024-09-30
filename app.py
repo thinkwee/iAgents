@@ -218,8 +218,8 @@ def get_messages():
         messages = [{
             'sender': sender,
             'receiver': receiver,
-            'raw_message': message,
-            'message': message,  # 不再使用 markdown.markdown()
+            'raw_message': message.replace("```markdown", "").replace("```", ""),
+            'message': message.replace("```markdown", "").replace("```", ""),
             'timestamp': timestamp,
             'communication_history': communication_history,
             'sender_profile_image_url': get_profile_image_url(sender),
@@ -428,6 +428,8 @@ def index():
     return redirect('/login')
 
 
+from pypinyin import lazy_pinyin
+
 @app.route('/chat')
 def chat_page():
     if 'name' not in session:
@@ -436,13 +438,17 @@ def chat_page():
     friend_list = exec_sql(
         "SELECT name FROM users WHERE id IN (SELECT friend_id FROM friendships WHERE user_id=%s)",
         params=(session['user_id'],))
+    
+    # Sort the friend list alphabetically
+    sorted_friend_list = sorted(friend_list, key=lambda x: lazy_pinyin(x[0]))
+    
     friend_name = request.args.get('chat')
 
     current_user_avatar_path = exec_sql("SELECT profile_image_path FROM users WHERE name=%s",
                                         params=(session['name'],))[0][0]
 
     return render_template('chat.html',
-                           friend_list=friend_list,
+                           friend_list=sorted_friend_list,
                            friend_name=friend_name,
                            current_user_avatar_path=current_user_avatar_path,
                            csrf_token=generate_csrf())

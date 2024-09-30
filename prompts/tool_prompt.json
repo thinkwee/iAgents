@@ -10,8 +10,8 @@
         "Here is the rationale collected by the other agent:",
         "{infonav_assistant}",
         "Ignore the conflicts between two rationales and use the cross-verified information in two rationales to make reasoning.",
-        "The answer should be detailed and can include Markdown format for better clarity.",
-        "Feel free to use lists, tables, or other Markdown elements to enhance your response.",
+        "The answer should be detailed and you can organize them using Markdown format for better clarity.",
+        "Feel free to use titles, lists, tables, or other Markdown elements to enhance your response, but only return the markdown formatted text. you don't need to return the markdown header like ```markdown",
         "RETURN THE MOST POSSIBLE ANSWER to the task based on these information in Markdown format."
     ],
 
@@ -20,8 +20,8 @@
         "The task is: {task}",
         "Here is a conversation between two agents working around this task:",
         "{agent_communication}",
-        "The answer should be detailed and can include Markdown format.",
-        "You can provide a comprehensive response using lists, tables, or any other Markdown elements for clarity.",
+        "The answer should be detailed and you can organize them using Markdown format for better clarity.",
+        "Feel free to use titles, lists, tables, or other Markdown elements to enhance your response, but only return the markdown formatted text. you don't need to return the markdown header like ```markdown",
         "RETURN THE MOST POSSIBLE ANSWER to the task in Markdown format."
     ],
 
