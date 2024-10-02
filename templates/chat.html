@@ -141,180 +141,188 @@
             let isAgentThinking = false;
             let thinkingAgentName = '';
 
+            let isAgentAdminPanel = false;
+
+            let lastMessageCount = 0;
+
             function fetchMessages() {
                 const currentChat = document.getElementById('receiver').value;
                 if (currentChat) {
-                    // 保存当前滚动位置
-                    const friendList = document.querySelector('.friend-list ul');
-                    friendListScrollPosition = friendList.scrollTop;
+                    if (isAgentAdminPanel) {
+                        fetchMessagesAgentCultivate();
+                    } else {
+                        // 保存当前滚动位置
+                        const friendList = document.querySelector('.friend-list ul');
+                        friendListScrollPosition = friendList.scrollTop;
 
-                    fetch(`/get_messages?chat=${currentChat}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Failed to fetch messages');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            const messageList = document.getElementById('message-list');
-                            messageList.innerHTML = '';
-                            data.messages.forEach(message => {
-                                const li = document.createElement('li');
-                                li.classList.add('message-item');
+                        fetch(`/get_messages?chat=${currentChat}`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to fetch messages');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                const messageList = document.getElementById('message-list');
+                                messageList.innerHTML = '';
+                                data.messages.forEach(message => {
+                                    const li = document.createElement('li');
+                                    li.classList.add('message-item');
 
 
-                                let bubbleClass = 'received_bubble';
-                                let alignClass = 'left';
-                                if (message.sender === '{{ session["name"] }}') {
-                                    bubbleClass = 'sent_bubble';
-                                    alignClass = 'right';
-                                } else if (message.sender.endsWith("'s Agent")) {
-                                    if (message.sender.startsWith('{{ session["name"] }}')) {
-                                        bubbleClass = 'agent_sent_bubble';
+                                    let bubbleClass = 'received_bubble';
+                                    let alignClass = 'left';
+                                    if (message.sender === '{{ session["name"] }}') {
+                                        bubbleClass = 'sent_bubble';
                                         alignClass = 'right';
-                                    } else {
-                                        bubbleClass = 'agent_receive_bubble';
+                                    } else if (message.sender.endsWith("'s Agent")) {
+                                        if (message.sender.startsWith('{{ session["name"] }}')) {
+                                            bubbleClass = 'agent_sent_bubble';
+                                            alignClass = 'right';
+                                        } else {
+                                            bubbleClass = 'agent_receive_bubble';
+                                        }
                                     }
-                                }
 
 
-                                const messageContainer = document.createElement('div');
-                                messageContainer.className = `chat-message ${alignClass}`;
+                                    const messageContainer = document.createElement('div');
+                                    messageContainer.className = `chat-message ${alignClass}`;
 
 
-                                const senderInfo = document.createElement('div');
-                                senderInfo.className = `sender-info ${alignClass}`;
+                                    const senderInfo = document.createElement('div');
+                                    senderInfo.className = `sender-info ${alignClass}`;
 
 
-                                const senderAvatar = document.createElement('img');
-                                senderAvatar.src = message.sender_profile_image_url;
-                                senderAvatar.alt = `${message.sender}'s avatar`;
-                                senderAvatar.classList.add('avatar');
+                                    const senderAvatar = document.createElement('img');
+                                    senderAvatar.src = message.sender_profile_image_url;
+                                    senderAvatar.alt = `${message.sender}'s avatar`;
+                                    senderAvatar.classList.add('avatar');
 
 
-                                const senderName = document.createElement('div');
-                                senderName.classList.add('sender-name');
-                                senderName.textContent = message.sender;
+                                    const senderName = document.createElement('div');
+                                    senderName.classList.add('sender-name');
+                                    senderName.textContent = message.sender;
 
-                                senderInfo.appendChild(senderAvatar);
-                                senderInfo.appendChild(senderName);
-
-
-                                const messageContent = document.createElement('div');
-                                messageContent.innerHTML = renderMessage(message.message);
-                                messageContent.classList.add('message-content');
-                                messageContent.classList.add(bubbleClass);
+                                    senderInfo.appendChild(senderAvatar);
+                                    senderInfo.appendChild(senderName);
 
 
-                                if (alignClass === 'left') {
-                                    messageContainer.appendChild(senderInfo);
-                                    messageContainer.appendChild(messageContent);
-                                } else {
-                                    messageContainer.appendChild(messageContent);
-                                    messageContainer.appendChild(senderInfo);
-                                }
+                                    const messageContent = document.createElement('div');
+                                    messageContent.innerHTML = renderMessage(message.message);
+                                    messageContent.classList.add('message-content');
+                                    messageContent.classList.add(bubbleClass);
 
-                                li.appendChild(messageContainer);
-                                messageList.appendChild(li);
 
-                                if (message.raw_message.includes('Conclusion on Agents\' Communication')) {
-                                    const feedbackLi = document.createElement('li');
-                                    feedbackLi.className = 'feedback-container';
-                                    
-                                    const feedbackKey = `${message.sender}-${message.timestamp}`;
-                                    const existingFeedback = feedbackState[feedbackKey];
-                                    
-                                    let feedbackContent;
-                                    if (existingFeedback) {
-                                        const feedbackClass = existingFeedback === 'good' ? 'feedback-good' : 'feedback-bad';
-                                        const feedbackEmoji = existingFeedback === 'good' ? '👍' : '👎';
-                                        feedbackContent = `
-                                            <div class="feedback-box feedback-sent ${feedbackClass}">
-                                                <p><strong>Your feedback: ${feedbackEmoji}</strong></p>
-                                            </div>
-                                        `;
+                                    if (alignClass === 'left') {
+                                        messageContainer.appendChild(senderInfo);
+                                        messageContainer.appendChild(messageContent);
                                     } else {
-                                        feedbackContent = `
-                                            <div class="feedback-box">
-                                                <p><strong>Rate this agents' communication</strong></p>
-                                                <div class="feedback-buttons">
-                                                    <button class="feedback-btn like-btn" data-feedback="good">👍</button>
-                                                    <button class="feedback-btn dislike-btn" data-feedback="bad">👎</button>
-                                                </div>
-                                            </div>
-                                        `;
+                                        messageContainer.appendChild(messageContent);
+                                        messageContainer.appendChild(senderInfo);
                                     }
-                                    
-                                    feedbackLi.innerHTML = feedbackContent;
-                                    
-                                    if (!existingFeedback) {
-                                        const likeButton = feedbackLi.querySelector('.like-btn');
-                                        const dislikeButton = feedbackLi.querySelector('.dislike-btn');
+
+                                    li.appendChild(messageContainer);
+                                    messageList.appendChild(li);
+
+                                    if (message.raw_message.includes('Conclusion on Agents\' Communication')) {
+                                        const feedbackLi = document.createElement('li');
+                                        feedbackLi.className = 'feedback-container';
                                         
-                                        [likeButton, dislikeButton].forEach(button => {
-                                            button.addEventListener('click', function() {
-                                                const feedback = this.dataset.feedback;
-                                                sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, feedback);
-                                                this.classList.add('clicked');
-                                                this.disabled = true;
-                                                
-                                                const otherButton = this === likeButton ? dislikeButton : likeButton;
-                                                otherButton.disabled = true;
-                                                
-                                                const feedbackBox = feedbackLi.querySelector('.feedback-box');
-                                                feedbackBox.classList.add('feedback-sent');
-                                                feedbackBox.classList.add(feedback === 'good' ? 'feedback-good' : 'feedback-bad');
-                                                
-                                                // Store the feedback state and update localStorage
-                                                feedbackState[feedbackKey] = feedback;
-                                                localStorage.setItem('feedbackState', JSON.stringify(feedbackState));
+                                        const feedbackKey = `${message.sender}-${message.timestamp}`;
+                                        const existingFeedback = feedbackState[feedbackKey];
+                                        
+                                        let feedbackContent;
+                                        if (existingFeedback) {
+                                            const feedbackClass = existingFeedback === 'good' ? 'feedback-good' : 'feedback-bad';
+                                            const feedbackEmoji = existingFeedback === 'good' ? '👍' : '👎';
+                                            feedbackContent = `
+                                                <div class="feedback-box feedback-sent ${feedbackClass}">
+                                                    <p><strong>Your feedback: ${feedbackEmoji}</strong></p>
+                                                </div>
+                                            `;
+                                        } else {
+                                            feedbackContent = `
+                                                <div class="feedback-box">
+                                                    <p><strong>Rate this agents' communication</strong></p>
+                                                    <div class="feedback-buttons">
+                                                        <button class="feedback-btn like-btn" data-feedback="good">👍</button>
+                                                        <button class="feedback-btn dislike-btn" data-feedback="bad">👎</button>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }
+                                        
+                                        feedbackLi.innerHTML = feedbackContent;
+                                        
+                                        if (!existingFeedback) {
+                                            const likeButton = feedbackLi.querySelector('.like-btn');
+                                            const dislikeButton = feedbackLi.querySelector('.dislike-btn');
+                                            
+                                            [likeButton, dislikeButton].forEach(button => {
+                                                button.addEventListener('click', function() {
+                                                    const feedback = this.dataset.feedback;
+                                                    sendFeedback(message.raw_message, message.communication_history, message.sender, message.receiver, feedback);
+                                                    this.classList.add('clicked');
+                                                    this.disabled = true;
+                                                    
+                                                    const otherButton = this === likeButton ? dislikeButton : likeButton;
+                                                    otherButton.disabled = true;
+                                                    
+                                                    const feedbackBox = feedbackLi.querySelector('.feedback-box');
+                                                    feedbackBox.classList.add('feedback-sent');
+                                                    feedbackBox.classList.add(feedback === 'good' ? 'feedback-good' : 'feedback-bad');
+                                                    
+                                                    // Store the feedback state and update localStorage
+                                                    feedbackState[feedbackKey] = feedback;
+                                                    localStorage.setItem('feedbackState', JSON.stringify(feedbackState));
 
-                                                // Update the content to show the submitted feedback
-                                                feedbackBox.innerHTML = `<p><strong>Your feedback: ${feedback === 'good' ? '👍' : '👎'}</strong></p>`;
+                                                    // Update the content to show the submitted feedback
+                                                    feedbackBox.innerHTML = `<p><strong>Your feedback: ${feedback === 'good' ? '👍' : '👎'}</strong></p>`;
+                                                });
                                             });
-                                        });
+                                        }
+
+                                        messageList.appendChild(feedbackLi);
+                                    }
+                                });
+
+                                // Check if we need to show or keep the thinking message
+                                if (isAgentThinking) {
+                                    // 找到最后一条非结论消息
+                                    let lastNonConclusionMessage = null;
+                                    for (let i = data.messages.length - 1; i >= 0; i--) {
+                                        if (!data.messages[i].message.includes("Conclusion on Agents\' Communication")) {
+                                            lastNonConclusionMessage = data.messages[i];
+                                            break;
+                                        }
                                     }
 
-                                    messageList.appendChild(feedbackLi);
-                                }
-                            });
-
-                            // Check if we need to show or keep the thinking message
-                            if (isAgentThinking) {
-                                // 找到最后一条非结论消息
-                                let lastNonConclusionMessage = null;
-                                for (let i = data.messages.length - 1; i >= 0; i--) {
-                                    if (!data.messages[i].message.includes("Conclusion on Agents\' Communication")) {
-                                        lastNonConclusionMessage = data.messages[i];
-                                        break;
+                                    if (lastNonConclusionMessage) {
+                                        console.log("Last non-conclusion message:", lastNonConclusionMessage);
+                                        const otherAgent = lastNonConclusionMessage.sender === "{{ session['name'] }}'s Agent" 
+                                            ? currentChat + "'s Agent" 
+                                            : "{{ session['name'] }}'s Agent";
+                                        console.log("Showing thinking message for:", otherAgent);
+                                        showThinkingMessage(otherAgent);
+                                    } else {
+                                        console.log("No suitable message found to determine thinking agent");
+                                        isAgentThinking = false; // 重置状态，因为没有合适的消息来决定谁在思考
                                     }
-                                }
-
-                                if (lastNonConclusionMessage) {
-                                    console.log("Last non-conclusion message:", lastNonConclusionMessage);
-                                    const otherAgent = lastNonConclusionMessage.sender === "{{ session['name'] }}'s Agent" 
-                                        ? currentChat + "'s Agent" 
-                                        : "{{ session['name'] }}'s Agent";
-                                    console.log("Showing thinking message for:", otherAgent);
-                                    showThinkingMessage(otherAgent);
                                 } else {
-                                    console.log("No suitable message found to determine thinking agent");
-                                    isAgentThinking = false; // 重置状态，因为没有合适的消息来决定谁在思考
+                                    console.log("Agent is not thinking");
                                 }
-                            } else {
-                                console.log("Agent is not thinking");
-                            }
 
-                            if (currentChat !== previousChat) {
-                                document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
-                            }
-                            previousChat = currentChat;
-                            // 更新选中状态
-                            updateSelectedFriend(currentChat);
-                            // 恢复滚动位置
-                            friendList.scrollTop = friendListScrollPosition;
-                        })
-                        .catch(error => console.error('Error fetching messages:', error));
+                                if (currentChat !== previousChat) {
+                                    document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+                                }
+                                previousChat = currentChat;
+                                // 更新选中状态
+                                updateSelectedFriend(currentChat);
+                                // 恢复滚动位置
+                                friendList.scrollTop = friendListScrollPosition;
+                            })
+                            .catch(error => console.error('Error fetching messages:', error));
+                    }
                 }
             }
 
@@ -754,12 +762,13 @@
             function openAgentChat() {
                 const receiver = "{{ session['name'] }}'s Agent";
                 document.getElementById('receiver').value = receiver;
+                isAgentAdminPanel = true;
                 fetchMessagesAgentCultivate();
             }
 
             function fetchMessagesAgentCultivate() {
                 const currentChat = document.getElementById('receiver').value;
-                if (currentChat) {
+                if (currentChat && isAgentAdminPanel) {
                     fetch(`/get_messages?chat=${currentChat}`)
                         .then(response => {
                             if (!response.ok) {
@@ -769,7 +778,28 @@
                         })
                         .then(data => {
                             const messageList = document.getElementById('message-list');
+                            const chatHistory = document.getElementById('chat-history');
+                            const wasScrolledToBottom = chatHistory.scrollHeight - chatHistory.clientHeight <= chatHistory.scrollTop + 1;
+                            
                             messageList.innerHTML = '';
+                            
+                            // 总是显示介绍消息
+                            const introMessage = document.createElement('div');
+                            introMessage.className = 'intro-message';
+                            introMessage.innerHTML = `
+                                <h2>Welcome to the Agent Admin Panel</h2>
+                                <p>This is where you can customize your personal LLM agent. All the customization is done by simply chatting with your agent. Here are some things you can do:</p>
+                                <ul>
+                                    <li>Ask your agent to return in certain format.</li>
+                                    <li>Ask your agent to role play in certain scenario.</li>
+                                    <li>Ask your agent to behave in certain way.</li>
+                                    <li>Input @ to automatically improve your agent's system profile using feedback data from your conversation with your friend.</li>
+                                </ul>
+                                <p>Start by sending a message to your agent below!</p>
+                            `;
+                            messageList.appendChild(introMessage);
+
+                            // 显示现有的消息
                             data.messages.forEach(message => {
                                 const li = document.createElement('li');
                                 li.classList.add('message-item');
@@ -819,7 +849,12 @@
                                 messageList.appendChild(li);
                             });
 
-                            document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+                            // 只在新消息到达或者之前在底部时才滚动到底部
+                            if (data.messages.length > lastMessageCount || wasScrolledToBottom) {
+                                chatHistory.scrollTop = chatHistory.scrollHeight;
+                            }
+                            
+                            lastMessageCount = data.messages.length;
                         })
                         .catch(error => console.error('Error fetching messages:', error));
                 }
@@ -845,6 +880,7 @@
                         e.preventDefault();
                         const friendName = this.textContent.trim();
                         document.getElementById('receiver').value = friendName;
+                        isAgentAdminPanel = false;
                         fetchMessages();
                     });
                 });
@@ -942,28 +978,6 @@
             {% endif %}
 
         </script>
-
-        <style>
-            /* Add this to your existing styles */
-            .thinking-container {
-                display: flex;
-                justify-content: center;
-                margin: 10px 0;
-            }
-
-            .thinking-box {
-                padding: 5px 15px;
-                border-radius: 15px;
-                font-style: italic;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            }
-
-            .ellipsis {
-                display: inline-block;
-                width: 20px;
-                text-align: left;
-            }
-        </style>
     </div>
 </body>
 
