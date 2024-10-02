@@ -463,6 +463,11 @@ def chat_page():
     current_user_avatar_path = exec_sql("SELECT profile_image_path FROM users WHERE name=%s",
                                         params=(session['name'],))[0][0]
 
+    # Fetch guide_seen status
+    guide_seen = exec_sql("SELECT guide_seen FROM users WHERE name = %s",
+                          params=(session['name'],))
+    session['guide_seen'] = guide_seen[0][0] if guide_seen else False
+
     return render_template('chat.html',
                            friend_list=sorted_friend_list,
                            friend_name=friend_name,
@@ -566,6 +571,22 @@ Now focus on the requirements of "{}" and previous requirements, you must return
         return jsonify({'agent_response': agent_response, 'communication_history': "None"}), 200
     else:
         return jsonify({'error': 'No chat receiver specified'}), 400
+
+@app.route('/mark_guide_seen', methods=['POST'])
+@csrf.exempt
+def mark_guide_seen():
+    if 'name' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    try:
+        exec_sql("UPDATE users SET guide_seen = 1 WHERE name = %s",
+                 params=(session['name'],),
+                 mode="write")
+        session['guide_seen'] = True
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        logging.error(f"Error marking guide as seen: {e}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     HOST = global_config.get("website", {}).get("host", "0.0.0.0")

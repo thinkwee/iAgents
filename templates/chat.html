@@ -9,6 +9,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/5.1.0/introjs.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/5.1.0/intro.min.js"></script>
 </head>
 
 <body>
@@ -878,6 +880,66 @@
 
                 return marked.parse(text);
             }
+
+            // Add this new function to initialize and start the guide
+            function startGuide() {
+                const steps = [
+                    {
+                        element: document.querySelector('.friend-list form'),
+                        intro: "Add friends: Type a username in this box and click 'Add' to connect with other users.",
+                        position: 'right'
+                    },
+                    {
+                        element: document.querySelector('.agent-admin-panel-button'),
+                        intro: "Cultivate your agent: Click here to access the Agent Admin Panel, chat with your agent to teach them how to behave when collaborating with others.",
+                        position: 'left'
+                    },
+                    {
+                        element: document.querySelector('.change-avatar-buttons'),
+                        intro: "Customize your appearance: Click 'User Icon' to change your profile picture, and 'Agent Icon' to change your agent's avatar.",
+                        position: 'left'
+                    },
+                    {
+                        element: document.querySelector('.composite-button'),
+                        intro: "Use RAG (Retrieval-Augmented Generation): Upload documents or provide URLs here. Your agent will use this information to enhance its collaboration with others.",
+                        position: 'left'
+                    },
+                    {
+                        element: document.querySelector('.chat-history'),
+                        intro: "Chat: This is where your conversations appear. Just like any other IM Apps, type and chat here with your friends.",
+                        position: 'left'
+                    },
+                    {
+                        element: document.querySelector('.message-input'),
+                        intro: "Invoke your agent: Type '@' followed by your message, which will turn your message into task prompt to call your agent. Your agent will then work with your friend's agent to complete the task.",
+                        position: 'top'
+                    }
+                ];
+
+                introJs().setOptions({
+                    steps: steps,
+                    showStepNumbers: false,
+                    exitOnOverlayClick: false,
+                    exitOnEsc: false,
+                    doneLabel: "Got it!"
+                }).start().oncomplete(function() {
+                    // Mark the guide as seen
+                    fetch('/mark_guide_seen', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'  // Remove the parentheses
+                        }
+                    }).then(response => response.json())
+                      .then(data => console.log(data))
+                      .catch(error => console.error('Error:', error));
+                });
+            }
+
+            // Check if the user has seen the guide
+            {% if not session.get('guide_seen', False) %}
+                window.addEventListener('load', startGuide);
+            {% endif %}
 
         </script>
 

@@ -67,7 +67,8 @@ def create_users_table(cursor):
                 password VARCHAR(255) NOT NULL,
                 system_prompt TEXT NOT NULL,
                 profile_image_path VARCHAR(255) DEFAULT 'default.png',
-                agent_profile_image_path VARCHAR(255) DEFAULT 'default_agent.png'
+                agent_profile_image_path VARCHAR(255) DEFAULT 'default_agent.png',
+                guide_seen TINYINT(1) DEFAULT 0 COMMENT 'IF USER HAS SEEN THE GUIDE OR NOT'
             )
         """)
         print("Table 'users' created successfully")
