@@ -6,7 +6,6 @@ import yaml
 
 from backend.gemini import query_gemini
 from backend.gpt import query_claude, query_gpt, query_gpt4
-from backend.ollama import query_ollama
 from backend.third_party import *
 from iagents.tool import FaissTool, JsonFormatTool, MindFillTool, SqlTool
 from iagents.util import iAgentsLogger
@@ -79,6 +78,7 @@ class Agent(ABC):
         elif backend == "claude":
             return query_claude
         elif backend == "ollama":
+            from backend.ollama import query_ollama
             return query_ollama
         elif backend == "deepseek":
             return query_deepseek

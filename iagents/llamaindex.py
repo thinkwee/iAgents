@@ -11,7 +11,6 @@ from llama_index.readers.file import (
     IPYNBReader,
     MarkdownReader,
     MboxReader,
-    PptxReader,
     PandasCSVReader,
     XMLReader,
 )
@@ -44,7 +43,6 @@ class LlamaIndexer():
             self.llm = client_qwen_llama_index
             self.embed_model = dashscope_embedder
         elif global_config.get("backend").get("provider") == "glm":
-            from  backend.ollama import ollama_embed_model
             self.llm = client_glm_llama_index
             self.embed_model = ZhipuEmbeddings()
         elif global_config.get("backend").get("provider") == "hunyuan":
@@ -85,7 +83,6 @@ class LlamaIndexer():
             ".ipynb": IPYNBReader(),
             ".md": MarkdownReader(),
             ".mbox": MboxReader(),
-            ".pptx": PptxReader(),
             ".csv": PandasCSVReader(),
             ".xml": XMLReader(),
         }

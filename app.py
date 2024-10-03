@@ -123,9 +123,12 @@ def register():
         hashed_password = hash_password(password)
 
         try:
-            exec_sql("INSERT INTO users (name, password) VALUES (%s, %s)",
-                     params=(name, hashed_password),
-                     mode="write")
+            exec_sql("""
+                INSERT INTO users (name, password, system_prompt, profile_image_path, agent_profile_image_path, guide_seen)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                params=(name, hashed_password, '', 'default.png', 'default_agent.png', 0),
+                mode="write")
             return redirect(url_for('login'))
         except mysql.connector.IntegrityError:
             return render_template('login.html', error='Username already exists. Please choose a different one.')
@@ -133,6 +136,7 @@ def register():
             logging.error(f"Error occurred during registration: {e}")
             return render_template('login.html', error='Username invalid or exists, Please try again.', show_register=True)
     return render_template('login.html')
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
