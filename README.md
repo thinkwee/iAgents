@@ -185,7 +185,7 @@
    - [x] Agent Cultivate
    - [ ] Customizable human information access authorization
    - [ ] InfoNav visualizer
-   - [ ] Agent action status bar
+   - [x] Agent action status bar
    - [ ] Add more preset databases for experience
    - [ ] Fuzzy memory
    - [ ] Enable agents to proactively initiate new communication
