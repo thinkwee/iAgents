@@ -9,6 +9,7 @@
 </p>
 
 ## 🎆 News
+* 2024.10.20 The iAgents platform is free to use for everyone at <a href="https://thinkwee.top/iagents">iAgents Website</a>! 🥳 You can also check our <a href="https://huggingface.co/spaces/thinkwee/iAgents">Huggingface Space</a>!
 * 2024.9.26 🎉🎉🎉 Our paper [*Autonomous Agents for Collaborative Task under Information Asymmetry*](https://arxiv.org/abs/2406.14928) is accepted by NeurIPS 2024! Also, we release the [official website](https://thinkwee.top/iagents) for **iAgents**! 🌟 The iAgents platform will be free for everyone to use (coming soon)! 🥳
       <p align="center">
          <img src='./static/website.jpg' width=800>
