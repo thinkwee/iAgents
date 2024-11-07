@@ -1,3 +1,7 @@
+
+This repo has moved to https://github.com/thunlp/iAgents, Please check our latest progress there. 
+---
+
 <p align="center">
   <img src='./static/github_cover.svg' width=800>
 </p>
