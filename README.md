@@ -7,7 +7,7 @@ This repo has moved to https://github.com/thunlp/iAgents, Please check our lates
 </p>
 
 <p align="center">
-    【🎉 <a href="https://thinkwee.top/iagents">Website</a> | 🚀 <a href="#%EF%B8%8F-quickstart">Quickstart</a> | 📚 <a href="https://arxiv.org/abs/2406.14928">Paper</a> | 🤗 <a href="https://huggingface.co/spaces/thinkwee/iAgents">Huggingface Space</a> | 🎤 <a href="https://recorder-v3.slideslive.com/?share=93148&s=635f7131-d585-4a09-818c-5742da30dbfc">Slide</a>】
+    【🎉 <a href="https://thinkwee.top/iagents">Website</a> | 🚀 <a href="#%EF%B8%8F-quickstart">Quickstart</a> | 📚 <a href="https://arxiv.org/abs/2406.14928">NeurIPS 2024 Paper</a> | 🤗 <a href="https://huggingface.co/spaces/thinkwee/iAgents">Huggingface Space</a> | 🎤 <a href="https://recorder-v3.slideslive.com/?share=93148&s=635f7131-d585-4a09-818c-5742da30dbfc">Slide</a>】
     <br>
     【📖 <a href="wiki.md">Wiki</a> | 🏆 <a href="./data/README.md">informativeBench</a> | 👥 <a href="wiki.md#interact-with-preset-database">Interact with <i>Friends</i></a> | 🔬 <a href="#-more-from-our-team">More from our Team</a>】
 </p>
@@ -203,11 +203,10 @@ This repo has moved to https://github.com/thunlp/iAgents, Please check our lates
 ## 🔎 Citation
 
 ```
-@article{liu2024autonomous,
+@inproceedings{liuautonomous,
   title={Autonomous Agents for Collaborative Task under Information Asymmetry},
-  author={Liu, Wei and Wang, Chenxi and Wang, Yifei and Xie, Zihao and Qiu, Rennai and Dang, Yufan and Du, Zhuoyun and Chen, Weize and Yang, Cheng and Qian, Chen},
-  journal={arXiv preprint arXiv:2406.14928},
-  year={2024}
+  author={Liu, Wei and Wang, Chenxi and Wang, YiFei and Xie, Zihao and Qiu, Rennai and Dang, Yufan and Du, Zhuoyun and Chen, Weize and Yang, Cheng and Qian, Chen},
+  booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems}
 }
 ```
 
