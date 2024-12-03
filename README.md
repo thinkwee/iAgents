@@ -185,15 +185,9 @@
    - [x] Support JinaReader
    - [x] Support llama_index
    - [x] Agent Cultivate
-   - [ ] Customizable human information access authorization
-   - [ ] InfoNav visualizer
    - [x] Agent action status bar
-   - [ ] Add more preset databases for experience
    - [ ] Fuzzy memory
    - [ ] Enable agents to proactively initiate new communication
-   - [ ] Switching between different agent types (structure/prompts/information access range)
-   - [ ] Customizable reasoning class
-   - [ ] Distributed deployment
    - [ ] Edge-side model support
 
 
