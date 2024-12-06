@@ -3,9 +3,9 @@
 </p>
 
 <p align="center">
-    【🎉 <a href="https://thinkwee.top/iagents">Website</a> | 🚀 <a href="#%EF%B8%8F-quickstart">Quickstart</a> | 📚 <a href="https://arxiv.org/abs/2406.14928">NeurIPS 2024 Paper</a> | 🤗 <a href="https://huggingface.co/spaces/thinkwee/iAgents">Huggingface Space</a> | 🎤 <a href="https://recorder-v3.slideslive.com/?share=93148&s=635f7131-d585-4a09-818c-5742da30dbfc">Slide</a>】
+    【🎉 <a href="https://thinkwee.top/iagents">Website</a> | 🚀 <a href="#%EF%B8%8F-quickstart">Quickstart</a> | 📚 <a href="https://arxiv.org/abs/2406.14928">NeurIPS 2024 Paper</a> | 🤗 <a href="https://huggingface.co/spaces/thinkwee/iAgents">Huggingface Space</a> | 💬 <a href="https://recorder-v3.slideslive.com/?share=93148&s=635f7131-d585-4a09-818c-5742da30dbfc">Slide</a>】
     <br>
-    【📖 <a href="wiki.md">Wiki</a> | 🏆 <a href="./data/README.md">informativeBench</a> | 👥 <a href="wiki.md#interact-with-preset-database">Interact with <i>Friends</i></a> | 🔬 <a href="#-more-from-our-team">More from our Team</a>】
+    【📖 <a href="wiki.md">Wiki</a> | 🏆 <a href="./data/README.md">informativeBench</a> | 👥 <a href="wiki.md#interact-with-preset-database">Interact with <i>Friends</i></a> | 🔬 <a href="#-more-from-our-team">More from our Team</a> | 🎤 <a href="https://notebooklm.google.com/notebook/98b60948-ee08-4f1e-a8ed-a9ad7bd48015/audio">NoteBookLLM Audio</a>】
 </p>
 
 ## 🎆 News
